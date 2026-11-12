@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Tonight's activity</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/parent.css">
+<style>
+  .lay { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 22px; align-items: start; }
+  .acts { display: flex; flex-direction: column; padding: 8px; }
+  .acts small.h { padding: 10px 12px 4px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .act { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: var(--r-md); border: 0; background: transparent; cursor: pointer; text-align: left; font-family: var(--font-ui); color: var(--text); }
+  .act:hover { background: var(--indigo-50); }
+  .act.on { background: var(--indigo-50); box-shadow: inset 3px 0 0 var(--apricot); }
+  .act .ai { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); flex-shrink: 0; }
+  .act.now .ai { background: var(--apricot); color: var(--indigo); }
+  .act .grow { flex: 1; min-width: 0; }
+  .act b { display: block; font-size: 14.5px; }
+  .act span.m { color: var(--muted); font-size: 13px; }
+  .act .ok { color: var(--mint-700); }
+  .detail { padding: 26px 28px; display: flex; flex-direction: column; gap: 20px; }
+  .detail h1 { font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+  .why { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--indigo-50); color: var(--indigo); font-size: 15px; }
+  .mats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mat { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border-radius: 999px; background: var(--surface-2); font-weight: 600; font-size: 14px; }
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 10px; counter-reset: s; padding: 0; margin: 0; }
+  .steps li { counter-increment: s; display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-md); border: 1px solid var(--line); font-size: 16px; line-height: 1.5; }
+  .steps li::before { content: counter(s); width: 30px; height: 30px; border-radius: 50%; background: var(--indigo); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .tip { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--mint-100); color: var(--mint-700); font-size: 15px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .actions .sp { flex: 1; }
+  .done-banner { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-radius: var(--r-md); background: var(--mint-100); color: var(--mint-700); font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  @media (max-width: 900px) { .lay { grid-template-columns: 1fr; } .detail { padding: 20px; } }
+</style>
+</head>
+<body>
+<header class="p-top" data-active="tonight"></header>
+<main class="p-main">
+  <div class="p-head"><div><h1>Tonight's activity</h1><p>Short games you can do at home. The teacher picks them from Lina's results.</p></div></div>
+  <div class="lay">
+    <nav class="pbox acts" aria-label="Activities" id="acts"></nav>
+    <article class="pbox detail" id="detail" aria-live="polite"></article>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/parent.js"></script>
+<script>
+  var AR = P_LANG === "ar";
+  var acts = [
+    { id: "beans", now: true, s: "Math", mins: 15, t: "Borrowing with beans and cups", from: "Math Test 3",
+      why: "In Test 3 Lina found it hard to borrow a ten when taking away, for example 62 minus 37.",
+      mats: ["60 beans or pasta pieces", "6 cups", "Paper and pencil"],
+      steps: ["Put 10 beans in each cup. Make 6 cups. Now you have 60.", "Add 2 loose beans. Ask Lina: how many beans are there? (62)", "Ask her to take away 37. There are only 2 loose beans, so she has to open one cup.", "She pours one cup out. Now there are 12 loose beans. She takes away 7, then 3 cups.", "Count what is left together: 2 cups and 5 beans make 25.", "Try 2 more: 53 minus 28, and 71 minus 45."],
+      tip: "Let Lina do the pouring. Opening the cup herself is what makes borrowing make sense.",
+      ar: { t: "الاستلاف بالحبوب والأكواب", why: "في الاختبار ٣ وجدت لينا صعوبة في استلاف عشرة عند الطرح، مثل ٦٢ ناقص ٣٧.",
+        mats: ["٦٠ حبة فول أو مكرونة", "٦ أكواب", "ورقة وقلم"],
+        steps: ["ضعوا كل ١٠ حبات في كوب. اصنعوا ٦ أكواب. الآن لديكم ٦٠.", "أضيفوا حبتين خارج الأكواب. اسألوا لينا: كم حبة لدينا؟ (٦٢)", "اطلبوا منها أن تطرح ٣٧. توجد حبتان فقط خارج الأكواب، لذلك عليها أن تفتح كوبًا.", "تفرغ كوبًا واحدًا. الآن توجد ١٢ حبة. تطرح ٧ ثم ٣ أكواب.", "عدّوا الباقي معًا: كوبان و٥ حبات تساوي ٢٥.", "جربوا مسألتين أخريين: ٥٣ ناقص ٢٨، و٧١ ناقص ٤٥."],
+        tip: "دعوا لينا تفرغ الكوب بنفسها. هذا ما يجعل فكرة الاستلاف واضحة." } },
+    { id: "dice", s: "Math", mins: 10, t: "Times 7 with dice", done: "3 Oct", from: "Homework sheet 4",
+      why: "Practice for the 7 times table before Test 3.", mats: ["2 dice", "Paper and pencil"],
+      steps: ["Roll one die. Multiply the number by 7.", "Lina says the answer out loud, then writes it.", "Swap roles: you roll and she checks your answer.", "Play until each of you has 10 answers."],
+      tip: "Make one answer wrong on purpose and see if she catches it." },
+    { id: "hunt", s: "English", mins: 10, t: "Double-letter hunt", done: "1 Oct", from: "Spelling test 3",
+      why: "Practice spotting words with double letters like 'apple' and 'ball'.", mats: ["A picture book or a cereal box"],
+      steps: ["Pick one page together.", "Lina hunts for words with two letters the same next to each other.", "Write each word and draw a ring around the double letters.", "Find 8 words to win."],
+      tip: "Kitchen packets are full of double letters: coffee, butter, cheese." },
+    { id: "coins", s: "Math", mins: 15, t: "Borrowing with coins", done: "26 Sep", from: "Math Test 2",
+      why: "First practice of borrowing a ten after Test 2.", mats: ["10 cent and 1 cent coins (or paper ones)"],
+      steps: ["Make 45 cents with 4 ten-cent coins and 5 one-cent coins.", "Ask Lina to pay you 18 cents.", "She needs to swap one 10 cent coin for ten 1 cent coins.", "Count what is left together (27)."],
+      tip: "Real coins work best, but drawn ones are fine too." }
+  ];
+  var sel = 0, speaking = false;
+  function renderList() {
+    var html = '<small class="h">Tonight</small>';
+    acts.forEach(function (a, i) {
+      if (i === 1) html += '<small class="h">Done before</small>';
+      html += '<button class="act' + (i === sel ? " on" : "") + (a.now ? " now" : "") + '" data-i="' + i + '"><span class="ai"><i data-lucide="' + (a.now ? "moon-star" : "check") + '" class="i-sm"></i></span><span class="grow"><b>' + a.t + '</b><span class="m">' + a.s + " · " + (a.done ? "Done " + a.done : a.mins + " minutes") + "</span></span>" + (a.done || a.finished ? '<i data-lucide="circle-check" class="i-sm ok" aria-label="Done"></i>' : "") + "</button>";
+    });
+    document.getElementById("acts").innerHTML = html;
+  }
+  function renderDetail() {
+    var a = acts[sel], L = AR && a.ar ? a.ar : a;
+    var d = document.getElementById("detail");
+    d.setAttribute("dir", AR && a.ar ? "rtl" : "ltr");
+    d.setAttribute("lang", AR && a.ar ? "ar" : "en");
+    d.innerHTML =
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="subj sj-' + a.s + '">' + a.s + '</span><span class="muted" style="font-size:14px">' + a.mins + " minutes · From " + a.from + "</span></div>" +
+      "<h1>" + L.t + "</h1>" +
+      (a.done || a.finished ? '<div class="done-banner"><i data-lucide="circle-check" class="i-sm"></i>You did this ' + (a.done ? "on " + a.done : "tonight") + ". The teacher can see it.</div>" : "") +
+      '<div class="why"><i data-lucide="lightbulb" class="i-sm" style="margin-top:3px"></i><span>' + L.why + "</span></div>" +
+      "<div><h3>" + (AR && a.ar ? "ما تحتاجونه" : "What you need") + '</h3><div class="mats">' + L.mats.map(function (m) { return '<span class="mat"><i data-lucide="package" class="i-sm"></i>' + m + "</span>"; }).join("") + "</div></div>" +
+      "<div><h3>" + (AR && a.ar ? "الخطوات" : "Steps") + '</h3><ol class="steps">' + L.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol></div>" +
+      '<div class="tip"><i data-lucide="heart-handshake" class="i-sm" style="margin-top:3px"></i><span>' + L.tip + "</span></div>" +
+      '<div class="actions"><button class="btn btn-ghost" id="listen"><i data-lucide="volume-2" class="i-sm"></i><span>' + (AR && a.ar ? "استمع" : "Listen") + '</span></button><a class="btn btn-quiet" href="overview.html"><i data-lucide="arrow-left" class="i-sm"></i>Back to overview</a><span class="sp"></span>' +
+      (a.done || a.finished ? "" : '<button class="btn btn-accent btn-lg" id="did"><i data-lucide="party-popper" class="i-sm"></i>We did it!</button>') + "</div>";
+    document.getElementById("listen").onclick = function () {
+      if (!("speechSynthesis" in window)) { toast("Read aloud is not available in this browser"); return; }
+      if (speaking) { speechSynthesis.cancel(); speaking = false; this.querySelector("span").textContent = AR && a.ar ? "استمع" : "Listen"; return; }
+      var u = new SpeechSynthesisUtterance([L.t, L.why].concat(L.steps, [L.tip]).join(". "));
+      u.lang = AR && a.ar ? "ar" : "en-GB"; u.rate = .95;
+      var btn = this; u.onend = function () { speaking = false; btn.querySelector("span").textContent = AR && a.ar ? "استمع" : "Listen"; };
+      speechSynthesis.speak(u); speaking = true; btn.querySelector("span").textContent = AR && a.ar ? "إيقاف" : "Stop";
+    };
+    var did = document.getElementById("did");
+    if (did) did.onclick = function () { a.finished = true; toast("Great! Frau Weber will see that you practised tonight."); render(); };
+    refreshIcons();
+  }
+  function render() { renderList(); renderDetail(); }
+  document.getElementById("acts").onclick = function (e) {
+    var b = e.target.closest(".act"); if (!b) return;
+    if (speaking) { speechSynthesis.cancel(); speaking = false; }
+    sel = +b.dataset.i; render();
+    if (window.innerWidth < 900) document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
+  };
+  render();
+</script>
+</body>
+</html>

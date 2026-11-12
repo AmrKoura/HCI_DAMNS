@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Teacher messages</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  body { display: flex; flex-direction: column; }
+  .inbox { flex: 1; min-height: 0; display: flex; max-width: 1360px; width: 100%; margin: 0 auto; padding-block: 20px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); gap: 0; }
+  .shell { flex: 1; min-height: 0; display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-1); overflow: hidden; }
+  .list { width: 340px; flex-shrink: 0; border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .list .top { padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--line); }
+  .search { position: relative; }
+  .search .input { min-height: 42px; padding-left: 40px; font-size: 14px; }
+  .search .i { position: absolute; left: 12px; top: 11px; color: var(--faint); width: 18px; height: 18px; }
+  .convs { overflow-y: auto; flex: 1; }
+  .conv { width: 100%; display: flex; gap: 12px; align-items: center; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: var(--surface); text-align: left; cursor: pointer; font-family: var(--font-ui); }
+  .conv:hover { background: var(--indigo-50); }
+  .conv.on { background: var(--indigo-50); box-shadow: inset 3px 0 0 var(--apricot); }
+  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex-shrink: 0; background: var(--apricot-100); color: #8A3E14; }
+  .av.p { background: var(--mint-100); color: var(--mint-700); }
+  .conv .grow { flex: 1; min-width: 0; }
+  .conv b { font-size: 14.5px; display: flex; gap: 6px; align-items: center; }
+  .conv small { color: var(--muted); font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .unread { width: 10px; height: 10px; border-radius: 50%; background: var(--apricot); flex-shrink: 0; }
+  .thread { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .th-top { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .th-top b { font-size: 16px; display: block; }
+  .th-top small { color: var(--muted); font-size: 13px; }
+  .msgs { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+  .m { max-width: 70%; padding: 10px 14px; border-radius: 4px 16px 16px 16px; background: var(--surface); border: 1px solid var(--line); font-size: 15px; }
+  .m.me { align-self: flex-end; background: var(--indigo); color: #fff; border-color: var(--indigo); border-radius: 16px 4px 16px 16px; }
+  .m .t { display: block; font-size: 11.5px; opacity: .65; text-align: right; margin-top: 3px; }
+  .m.sticker { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+  .composer { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .composer .input { min-height: 46px; border-radius: 999px; }
+  .tools { display: flex; gap: 6px; }
+  @media (max-width: 860px) { .list { width: 100%; } .thread { display: none; } .shell.open .list { display: none; } .shell.open .thread { display: flex; } .back { display: inline-flex !important; } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="messages"></header>
+<div class="inbox">
+  <div class="shell" id="shell">
+    <aside class="list">
+      <div class="top">
+        <div class="seg" role="group" aria-label="Show messages from">
+          <button type="button" data-tab="students" aria-pressed="true"><i data-lucide="backpack" class="i-sm"></i>Students</button>
+          <button type="button" data-tab="parents" aria-pressed="false"><i data-lucide="users" class="i-sm"></i>Parents</button>
+        </div>
+        <div class="search"><i data-lucide="search"></i><label for="q" style="position:absolute;left:-9999px">Search</label><input class="input" id="q" placeholder="Search names"></div>
+      </div>
+      <div class="convs" id="convs"></div>
+    </aside>
+    <section class="thread">
+      <div class="th-top">
+        <button class="icon-btn back" id="back" aria-label="Back to list" style="display:none"><i data-lucide="arrow-left" class="i-sm"></i></button>
+        <span class="av" id="thAv"></span>
+        <span><b id="thName"></b><small id="thSub"></small></span>
+      </div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <form class="composer" id="composer">
+        <div class="tools">
+          <button type="button" class="icon-btn" id="stk" aria-label="Send a sticker"><i data-lucide="star" class="i-sm"></i></button>
+          <button type="button" class="icon-btn" id="voice" aria-label="Record a voice note"><i data-lucide="mic" class="i-sm"></i></button>
+        </div>
+        <label for="draft" style="position:absolute;left:-9999px">Message</label>
+        <input class="input" id="draft" placeholder="Write a message..." autocomplete="off">
+        <button class="btn btn-primary" type="submit"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button>
+      </form>
+    </section>
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var data = {
+    students: [
+      { n: "Lina A.", sub: "Student · 3B · Math", un: true, msgs: [["me", "sticker", "Super effort!", "9:02"], ["me", "text", "You worked really hard on Test 3. I am proud of you!", "9:03"], ["them", "text", "Thank you Frau Weber!", "9:10"]] },
+      { n: "Karim F.", sub: "Student · 3B · Math", msgs: [["me", "text", "Please send your Test 3 photos when you can.", "Yesterday"]] },
+      { n: "Ben L.", sub: "Student · 4A · Science", un: true, msgs: [["them", "text", "Can I do the plant quiz again?", "Thu"]] }
+    ],
+    parents: [
+      { n: "Lina's mother", sub: "Parent of Lina A. · prefers Arabic", p: true, un: true, msgs: [["me", "text", "Lina worked hard on Test 3. We are practising borrowing in a small group this week. Tonight's activity will help a lot!", "9:20"], ["them", "text", "Thank you, we will do it tonight with beans!", "18:05"]] },
+      { n: "Karim's father", sub: "Parent of Karim F.", p: true, msgs: [["me", "text", "Karim has not sent his Test 3 photos yet. Could you help him tonight?", "Yesterday"]] }
+    ]
+  };
+  var tab = "students", sel = 0;
+  function ini(n) { return n.replace("'s", "").split(" ").map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase(); }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function render() {
+    var q = document.getElementById("q").value.toLowerCase();
+    var L = data[tab];
+    document.getElementById("convs").innerHTML = L.map(function (c, i) {
+      if (q && c.n.toLowerCase().indexOf(q) < 0) return "";
+      var last = c.msgs[c.msgs.length - 1];
+      return '<button class="conv' + (i === sel ? " on" : "") + '" data-i="' + i + '"><span class="av' + (c.p ? " p" : "") + '">' + ini(c.n) + '</span><span class="grow"><b>' + c.n + "</b><small>" + (last[0] === "me" ? "You: " : "") + esc(last[2]) + "</small></span>" + (c.un ? '<span class="unread" aria-label="Unread"></span>' : "") + "</button>";
+    }).join("");
+    var c = L[sel];
+    document.getElementById("thAv").textContent = ini(c.n);
+    document.getElementById("thAv").className = "av" + (c.p ? " p" : "");
+    document.getElementById("thName").textContent = c.n;
+    document.getElementById("thSub").textContent = c.sub;
+    document.getElementById("msgs").innerHTML = c.msgs.map(function (m) {
+      if (m[1] === "sticker") return '<div class="m me sticker"><i data-lucide="star" class="i-sm"></i>Sticker: ' + esc(m[2]) + '<span class="t">' + m[3] + "</span></div>";
+      if (m[1] === "voice") return '<div class="m me"><i data-lucide="audio-lines" class="i-sm" style="vertical-align:-3px"></i> Voice note ' + m[2] + '<span class="t">' + m[3] + "</span></div>";
+      return '<div class="m' + (m[0] === "me" ? " me" : "") + '">' + esc(m[2]) + '<span class="t">' + m[3] + "</span></div>";
+    }).join("");
+    var box = document.getElementById("msgs"); box.scrollTop = box.scrollHeight;
+    refreshIcons();
+  }
+  function now() { var d = new Date(); return d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2); }
+  document.querySelectorAll("[data-tab]").forEach(function (b) {
+    b.onclick = function () { tab = b.dataset.tab; sel = 0; document.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); render(); };
+  });
+  document.getElementById("convs").onclick = function (e) {
+    var b = e.target.closest(".conv"); if (!b) return;
+    sel = +b.dataset.i; data[tab][sel].un = false; document.getElementById("shell").classList.add("open"); render();
+  };
+  document.getElementById("back").onclick = function () { document.getElementById("shell").classList.remove("open"); };
+  document.getElementById("q").oninput = render;
+  document.getElementById("composer").onsubmit = function (e) {
+    e.preventDefault(); var v = document.getElementById("draft").value.trim(); if (!v) return;
+    data[tab][sel].msgs.push(["me", "text", v, now()]); document.getElementById("draft").value = ""; render();
+  };
+  document.getElementById("stk").onclick = function () { data[tab][sel].msgs.push(["me", "sticker", "Well done!", now()]); render(); };
+  document.getElementById("voice").onclick = function () { data[tab][sel].msgs.push(["me", "voice", "0:08", now()]); render(); toast("Voice note sent"); };
+  render();
+</script>
+</body>
+</html>

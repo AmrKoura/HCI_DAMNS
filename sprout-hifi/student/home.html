@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Math</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+  .results-card {
+    display: flex; align-items: center; gap: 18px; padding: 22px 24px; border-radius: var(--r-xl);
+    background: var(--indigo); color: #fff; text-decoration: none; transition: background .15s ease;
+  }
+  .results-card:hover { background: var(--indigo-700); }
+  .results-card .star { width: 60px; height: 60px; border-radius: 18px; background: var(--apricot); color: var(--indigo); display: grid; place-items: center; flex-shrink: 0; }
+  .results-card b { font-size: 22px; display: block; }
+  .results-card small { color: #CFCBEA; font-size: 15px; }
+  .results-card .grow { flex: 1; min-width: 0; }
+  .due { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 15px; }
+  .due.soon { color: #8A3E14; font-weight: 600; }
+  .sent { display: inline-flex; align-items: center; gap: 6px; color: var(--mint-700); font-weight: 600; font-size: 15px; }
+  .right { display: flex; flex-direction: column; gap: 24px; }
+</style>
+</head>
+<body class="kid">
+<main class="k-wrap">
+  <header class="k-top">
+    <a class="k-icon" href="subjects.html" aria-label="Back to subjects"><i data-lucide="arrow-left"></i></a>
+    <div class="grow"></div>
+    <div class="notif-wrap">
+      <button class="k-icon" id="bell" aria-label="Notifications" aria-expanded="false"><i data-lucide="bell"></i><span class="dot">3</span></button>
+      <div class="notif" id="notifPanel" hidden>
+        <h3>From Frau Weber</h3>
+        <a href="results.html"><span class="n-ico mint"><i data-lucide="check-check" class="i-sm"></i></span><span><p>I checked your <b>Math Test 3</b>.</p><small>Today, 9:00</small></span></a>
+        <a href="mistakes.html"><span class="n-ico apr"><i data-lucide="sprout" class="i-sm"></i></span><span><p>New practice for you: <b>borrowing from the tens</b>.</p><small>Today, 9:01</small></span></a>
+        <a href="messages.html"><span class="n-ico"><i data-lucide="message-circle" class="i-sm"></i></span><span><p>You got a sticker: <b>Super effort!</b></p><small>Today, 9:02</small></span></a>
+      </div>
+    </div>
+    <a class="k-icon" href="messages.html" aria-label="Messages, 1 new"><i data-lucide="message-circle"></i><span class="dot">1</span></a>
+    <a class="k-icon" href="../index.html" aria-label="Log out"><i data-lucide="log-out"></i></a>
+  </header>
+
+  <div class="k-grid-2">
+    <section class="k-card k-pad" aria-labelledby="gardenTitle">
+      <div class="k-title">
+        <h2 id="gardenTitle">My Math Garden</h2>
+        <span class="pill pill-mint"><i data-lucide="sprout" class="i-sm"></i>4 skills</span>
+      </div>
+      <div class="garden-grid">
+        <div class="plant"><span data-plant="bloom"></span><b>Adding</b><small>Growing tall!</small></div>
+        <div class="plant thirsty"><span data-plant="droop"></span><b>Subtracting</b><small>Needs a little water</small></div>
+        <div class="plant"><span data-plant="grow"></span><b>Place value</b><small>Getting bigger</small></div>
+        <div class="plant"><span data-plant="sprout"></span><b>Shapes</b><small>Just planted</small></div>
+      </div>
+    </section>
+
+    <div class="right">
+      <a class="results-card" href="results.html">
+        <span class="star"><i data-lucide="star" class="i-lg"></i></span>
+        <span class="grow"><b>You have 5 new results!</b><small>See all your Math results</small></span>
+        <i data-lucide="chevron-right" class="i-lg"></i>
+      </a>
+
+      <section class="k-card k-pad" aria-labelledby="examsTitle">
+        <div class="k-title"><h2 id="examsTitle">My exams to send</h2></div>
+        <div class="k-row">
+          <div class="grow"><b>Homework sheet 6</b><span class="due soon"><i data-lucide="clock" class="i-sm"></i>Due Mon 12 Oct</span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+        </div>
+        <div class="k-row">
+          <div class="grow"><b>Math Test 4 · Shapes</b><span class="due"><i data-lucide="calendar" class="i-sm"></i>Due Thu 15 Oct</span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+        </div>
+        <div class="k-row">
+          <div class="grow"><b>Math Test 5 · Clock</b><span class="due"><i data-lucide="calendar" class="i-sm"></i>Due Thu 29 Oct</span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+        </div>
+        <div class="k-row">
+          <div class="grow"><b class="muted">Math Test 3 · Subtraction</b><small>Your teacher is checking it</small></div>
+          <span class="sent"><i data-lucide="circle-check" class="i-sm"></i>Sent</span>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Messages</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+  .chat-page { height: 100%; display: flex; flex-direction: column; }
+  .chat-top {
+    display: flex; align-items: center; gap: 14px; padding-block: 16px;
+    padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px));
+    background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .chat-top .who { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+  .chat-top .avatar { background: var(--indigo-50); color: var(--indigo); font-size: 17px; }
+  .chat-top b { font-size: 19px; display: block; }
+  .chat-top small { color: var(--muted); font-size: 14px; }
+  .thread {
+    flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
+    padding-block: 24px;
+    padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px));
+    background: var(--bg);
+  }
+  .day { align-self: center; font-size: 13px; color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+  .msg { display: flex; align-items: flex-end; gap: 10px; max-width: 100%; }
+  .msg.me { flex-direction: row-reverse; }
+  .bubble {
+    max-width: min(560px, 78%); padding: 12px 16px; border-radius: 6px 20px 20px 20px;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1);
+    text-align: left; font: 400 18px/1.4 var(--font-kid); color: var(--text); cursor: pointer;
+    transition: box-shadow .15s ease, outline-color .15s ease; outline: 3px solid transparent;
+  }
+  .me .bubble { background: var(--indigo); color: #fff; border-color: var(--indigo); border-radius: 20px 6px 20px 20px; }
+  .bubble.sel { outline-color: var(--apricot); }
+  .bubble .time { display: block; font-size: 12px; opacity: .65; margin-top: 4px; text-align: right; }
+  .quote { display: block; margin-bottom: 8px; padding: 6px 10px; border-left: 4px solid var(--apricot); border-radius: 8px; background: rgba(43, 37, 96, .07); font-size: 14px; }
+  .me .quote { background: rgba(255, 255, 255, .14); }
+  .sticker { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 18px; }
+  .sticker .s { width: 86px; height: 86px; border-radius: 50%; background: var(--apricot); color: var(--indigo); display: grid; place-items: center; }
+  .sticker .s .i { width: 44px; height: 44px; fill: currentColor; }
+  .voice { display: flex; align-items: center; gap: 12px; }
+  .voice .p { width: 40px; height: 40px; border-radius: 50%; background: var(--indigo-50); color: var(--indigo); display: grid; place-items: center; }
+  .me .voice .p { background: rgba(255, 255, 255, .18); color: #fff; }
+  .wave { display: flex; align-items: center; gap: 3px; }
+  .wave i { display: block; width: 4px; border-radius: 2px; background: currentColor; opacity: .6; }
+  .say { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--indigo); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .say:hover { border-color: var(--indigo-500); background: var(--indigo-50); }
+  .replybar {
+    display: flex; align-items: center; gap: 12px; padding-block: 10px;
+    padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px));
+    background: var(--surface); border-top: 1px solid var(--line);
+  }
+  .replybar .q { flex: 1; min-width: 0; border-left: 4px solid var(--apricot); padding: 4px 12px; background: var(--apricot-100); border-radius: 8px; }
+  .replybar .q b { font-size: 13px; display: block; }
+  .composer {
+    display: flex; align-items: center; gap: 12px; padding-block: 14px;
+    padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px));
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface); border-top: 1px solid var(--line);
+  }
+  .composer .input { min-height: 58px; border-radius: 999px; font: 400 18px var(--font-kid); padding: 0 22px; }
+  .round { width: 58px; height: 58px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; background: var(--indigo); color: #fff; }
+  .round:hover { background: var(--indigo-700); }
+  .round.mic { background: var(--apricot); color: var(--indigo); }
+  .rec { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .rec .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--flag); animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+  .rec .wave i { background: var(--indigo); opacity: 1; animation: bounce 1s ease-in-out infinite; }
+  @keyframes bounce { 50% { transform: scaleY(.4); } }
+</style>
+</head>
+<body class="kid">
+<div class="chat-page">
+  <header class="chat-top">
+    <a class="k-icon" href="home.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+    <div class="who"><span class="avatar" aria-hidden="true">FW</span><span><b>Frau Weber</b><small>Math teacher · tap a message to answer it</small></span></div>
+  </header>
+
+  <div class="thread" id="thread" aria-live="polite"></div>
+
+  <div class="replybar" id="replyBar" hidden>
+    <i data-lucide="reply" class="i-sm" style="color:var(--apricot-600)"></i>
+    <div class="q"><b id="replyWho"></b><span id="replyText"></span></div>
+    <button class="icon-btn" id="cancelReply" aria-label="Cancel reply"><i data-lucide="x" class="i-sm"></i></button>
+  </div>
+
+  <form class="composer" id="composer">
+    <label for="draft" style="position:absolute;left:-9999px">Message</label>
+    <input class="input" id="draft" placeholder="Write a message..." autocomplete="off">
+    <button type="button" class="round mic" id="micBtn" aria-label="Record a voice note"><i data-lucide="mic" class="i-lg"></i></button>
+    <button type="submit" class="round" id="sendBtn" aria-label="Send" hidden><i data-lucide="send-horizontal" class="i-lg"></i></button>
+  </form>
+</div>
+
+<div class="overlay" id="recOverlay" hidden>
+  <div class="dialog rec" role="dialog" aria-modal="true" aria-labelledby="recTitle" style="width:min(440px,100%)">
+    <div style="display:flex;align-items:center;gap:10px"><span class="dot"></span><h2 id="recTitle" style="font-size:24px">Recording <span id="recTime">0:00</span></h2></div>
+    <div class="wave" style="height:44px"><i style="height:16px"></i><i style="height:34px;animation-delay:.1s"></i><i style="height:24px;animation-delay:.2s"></i><i style="height:40px;animation-delay:.3s"></i><i style="height:18px;animation-delay:.4s"></i><i style="height:30px;animation-delay:.5s"></i><i style="height:14px;animation-delay:.6s"></i><i style="height:26px;animation-delay:.7s"></i></div>
+    <p class="muted" id="recReply" hidden></p>
+    <p class="muted" style="font-size:15px"><i data-lucide="lock" class="i-sm" style="vertical-align:-3px"></i> Only Frau Weber can hear this.</p>
+    <div style="display:flex;gap:12px;width:100%">
+      <button class="btn btn-ghost btn-lg" id="recCancel" style="flex:1">Cancel</button>
+      <button class="btn btn-primary btn-lg" id="recSend" style="flex:1"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var msgs = [
+    { id: 1, me: false, kind: "sticker", text: "Super effort!", time: "9:02" },
+    { id: 2, me: false, kind: "voice", text: "0:12", time: "9:03" },
+    { id: 3, me: false, kind: "text", text: "You worked really hard on Test 3. I am proud of you!", time: "9:03" },
+    { id: 4, me: true, kind: "text", text: "Thank you Frau Weber!", time: "9:10", quote: 3 }
+  ];
+  var replyId = null, recTimer = null, recSec = 0;
+  var $ = function (id) { return document.getElementById(id); };
+  function find(id) { return msgs.filter(function (m) { return m.id === id; })[0]; }
+  function short(m) {
+    if (!m) return "";
+    if (m.kind === "voice") return "Voice note " + m.text;
+    if (m.kind === "sticker") return "Sticker: " + m.text;
+    return m.text.length > 60 ? m.text.slice(0, 60) + "..." : m.text;
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var bars = [12, 26, 18, 30, 14, 24, 10, 20, 28, 12];
+
+  function render() {
+    var t = $("thread");
+    t.innerHTML = '<span class="day">Today</span>' + msgs.map(function (m) {
+      var inner = "";
+      if (m.quote) inner += '<span class="quote">' + esc(short(find(m.quote))) + "</span>";
+      if (m.kind === "text") inner += esc(m.text);
+      if (m.kind === "sticker") inner += '<span class="sticker"><span class="s"><i data-lucide="star"></i></span><b>' + esc(m.text) + "</b></span>";
+      if (m.kind === "voice") inner += '<span class="voice"><span class="p"><i data-lucide="play" class="i-sm"></i></span><span class="wave">' +
+        bars.map(function (h) { return '<i style="height:' + h + 'px"></i>'; }).join("") + "</span><span>" + m.text + "</span></span>";
+      inner += '<span class="time">' + m.time + "</span>";
+      var say = m.kind === "text" ? '<button class="say" data-say="' + m.id + '" aria-label="Read this message out loud"><i data-lucide="volume-2" class="i-sm"></i></button>' : "";
+      return '<div class="msg' + (m.me ? " me" : "") + '"><button class="bubble' + (m.id === replyId ? " sel" : "") + '" data-id="' + m.id + '" aria-label="Reply to this message">' + inner + "</button>" + say + "</div>";
+    }).join("");
+    t.scrollTop = t.scrollHeight;
+    var r = find(replyId);
+    $("replyBar").hidden = !r;
+    if (r) { $("replyWho").textContent = "Answering " + (r.me ? "yourself" : "Frau Weber"); $("replyText").textContent = short(r); }
+    var has = $("draft").value.trim().length > 0;
+    $("micBtn").hidden = has; $("sendBtn").hidden = !has;
+    refreshIcons();
+  }
+
+  $("thread").addEventListener("click", function (e) {
+    var say = e.target.closest("[data-say]");
+    if (say) {
+      try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(find(+say.dataset.say).text)); } catch (err) {}
+      return;
+    }
+    var b = e.target.closest(".bubble");
+    if (b) { replyId = +b.dataset.id; render(); $("draft").focus(); }
+  });
+  $("cancelReply").onclick = function () { replyId = null; render(); };
+  $("draft").addEventListener("input", function () {
+    var has = this.value.trim().length > 0;
+    $("micBtn").hidden = has; $("sendBtn").hidden = !has;
+  });
+
+  function now() { var d = new Date(); return d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function add(kind, text) {
+    msgs.push({ id: Date.now(), me: true, kind: kind, text: text, time: now(), quote: replyId });
+    replyId = null; $("draft").value = ""; render();
+  }
+  $("composer").onsubmit = function (e) { e.preventDefault(); var v = $("draft").value.trim(); if (v) add("text", v); };
+
+  $("micBtn").onclick = function () {
+    recSec = 0; $("recTime").textContent = "0:00";
+    var r = find(replyId);
+    $("recReply").hidden = !r; if (r) $("recReply").textContent = "Answering: " + short(r);
+    $("recOverlay").hidden = false;
+    recTimer = setInterval(function () { recSec++; $("recTime").textContent = "0:" + ("0" + recSec).slice(-2); }, 1000);
+  };
+  function stopRec() { clearInterval(recTimer); $("recOverlay").hidden = true; }
+  $("recCancel").onclick = stopRec;
+  $("recSend").onclick = function () { var s = Math.max(recSec, 1); stopRec(); add("voice", "0:" + ("0" + s).slice(-2)); toast("Voice note sent"); };
+
+  render();
+</script>
+</body>
+</html>

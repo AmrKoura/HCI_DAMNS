@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Messages</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/parent.css">
+<style>
+  .shell { display: flex; height: calc(100vh - 64px - 56px - 70px); min-height: 480px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-1); overflow: hidden; }
+  .list { width: 330px; flex-shrink: 0; border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .list .top { padding: 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .list .top p { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: flex-start; }
+  .convs { overflow-y: auto; flex: 1; }
+  .conv { width: 100%; display: flex; gap: 12px; align-items: center; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: var(--surface); text-align: left; cursor: pointer; font-family: var(--font-ui); color: var(--text); }
+  .conv:hover { background: var(--indigo-50); }
+  .conv.on { background: var(--indigo-50); box-shadow: inset 3px 0 0 var(--apricot); }
+  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex-shrink: 0; background: var(--indigo-50); color: var(--indigo); }
+  .av.kid { background: var(--apricot-100); color: #8A3E14; }
+  .conv .grow { flex: 1; min-width: 0; }
+  .conv b { font-size: 14.5px; display: block; }
+  .conv small { color: var(--muted); font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .unread { width: 10px; height: 10px; border-radius: 50%; background: var(--apricot); flex-shrink: 0; }
+  .thread { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .th-top { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+  .th-top .grow { flex: 1; min-width: 0; }
+  .th-top b { font-size: 16px; display: block; }
+  .th-top small { color: var(--muted); font-size: 13px; }
+  .msgs { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+  .m { max-width: 72%; padding: 10px 14px; border-radius: 4px 16px 16px 16px; background: var(--surface); border: 1px solid var(--line); font-size: 15px; }
+  .m.me { align-self: flex-end; background: var(--indigo); color: #fff; border-color: var(--indigo); border-radius: 16px 4px 16px 16px; }
+  .m .who { display: block; font-size: 12px; font-weight: 700; color: var(--indigo-500); margin-bottom: 2px; }
+  .m.me .who { color: var(--apricot); }
+  .m .t { display: block; font-size: 11.5px; opacity: .65; text-align: right; margin-top: 3px; }
+  .m .tr { display: block; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line-strong); font-family: var(--font-ar); }
+  .m .trb { margin-top: 6px; border: 0; background: none; padding: 0; color: var(--indigo-500); font: 600 12.5px var(--font-ui); cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+  .m.me .trb { color: var(--apricot); }
+  .voice { display: inline-flex; gap: 10px; align-items: center; }
+  .voice .bars { display: inline-flex; gap: 2px; align-items: center; }
+  .voice .bars i { width: 3px; border-radius: 2px; background: currentColor; opacity: .5; display: inline-block; }
+  .voice.locked { color: var(--muted); }
+  .composer { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .composer .input { min-height: 46px; border-radius: 999px; }
+  .ro { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .ro p { flex: 1; font-size: 14px; color: var(--muted); }
+  .back { display: none !important; }
+  @media (max-width: 860px) {
+    .shell { height: calc(100vh - 64px - 140px); }
+    .list { width: 100%; border-right: 0; } .thread { display: none; }
+    .shell.open .list { display: none; } .shell.open .thread { display: flex; }
+    .back { display: inline-flex !important; }
+    .m { max-width: 86%; }
+  }
+</style>
+</head>
+<body>
+<header class="p-top" data-active="messages"></header>
+<main class="p-main" style="padding-bottom:28px">
+  <div class="shell" id="shell">
+    <aside class="list">
+      <div class="top">
+        <div class="seg" role="group" aria-label="Which chats">
+          <button type="button" data-tab="mine" aria-pressed="true"><i data-lucide="user" class="i-sm"></i>My chats</button>
+          <button type="button" data-tab="lina" aria-pressed="false"><i data-lucide="eye" class="i-sm"></i>Lina's chats</button>
+        </div>
+        <p id="tabNote"></p>
+      </div>
+      <div class="convs" id="convs"></div>
+    </aside>
+    <section class="thread">
+      <div class="th-top">
+        <button class="icon-btn back" id="back" aria-label="Back to chats"><i data-lucide="arrow-left" class="i-sm"></i></button>
+        <span class="av" id="thAv"></span>
+        <span class="grow"><b id="thName"></b><small id="thSub"></small></span>
+        <span id="thBadge"></span>
+      </div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div id="foot"></div>
+    </section>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/parent.js"></script>
+<script>
+  var data = {
+    mine: [
+      { n: "Frau Weber", sub: "Math and Science teacher", un: true, msgs: [
+        ["them", "text", "Lina worked hard on Test 3. We are practising borrowing in a small group this week. Tonight's activity will help a lot!", "9:20", "عملت لينا بجد في الاختبار ٣. نتدرب على الاستلاف في مجموعة صغيرة هذا الأسبوع. نشاط الليلة سيساعد كثيرًا!"],
+        ["me", "text", "Thank you, we will do it tonight with beans!", "18:05"]] },
+      { n: "Herr Klein", sub: "German teacher", msgs: [
+        ["them", "text", "Reading test on Wednesday 14 October. Lina can practise with any short story at home.", "Mon", "اختبار القراءة يوم الأربعاء ١٤ أكتوبر. يمكن للينا التدرب بأي قصة قصيرة في البيت."]] },
+      { n: "Ms Hart", sub: "English teacher", msgs: [
+        ["them", "text", "Lovely spelling this week. Please sign the reading log.", "2 Oct", "تهجئة رائعة هذا الأسبوع. يرجى توقيع سجل القراءة."],
+        ["me", "text", "Signed, thank you.", "2 Oct"]] }
+    ],
+    lina: [
+      { n: "Lina and Frau Weber", sub: "Math and Science", t: "Frau Weber", msgs: [
+        ["t", "sticker", "Super effort!", "9:02"],
+        ["t", "text", "You worked really hard on Test 3. I am proud of you!", "9:03"],
+        ["k", "text", "Thank you Frau Weber!", "9:10"],
+        ["k", "voice", "0:12", "9:11"]] },
+      { n: "Lina and Herr Klein", sub: "German", t: "Herr Klein", msgs: [
+        ["t", "text", "Great dictation, Lina. Only two small slips.", "Tue"],
+        ["k", "text", "Yay!", "Tue"]] }
+    ]
+  };
+  var tab = "mine", sel = 0;
+  function ini(n) { return n.replace("Lina and ", "").split(" ").map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase(); }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function bars() { return '<span class="bars">' + [8, 14, 10, 18, 12, 16, 9, 13, 7].map(function (h) { return '<i style="height:' + h + 'px"></i>'; }).join("") + "</span>"; }
+  function now() { var d = new Date(); return d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function render() {
+    var L = data[tab], ro = tab === "lina", c = L[sel];
+    document.getElementById("tabNote").innerHTML = ro
+      ? '<i data-lucide="shield-check" class="i-sm" style="margin-top:2px"></i>You can read Lina\'s chats with her teachers. You cannot write in them.'
+      : '<i data-lucide="languages" class="i-sm" style="margin-top:2px"></i>Teachers write in English. Press Translate to read in Arabic.';
+    document.getElementById("convs").innerHTML = L.map(function (x, i) {
+      var last = x.msgs[x.msgs.length - 1];
+      var prev = last[1] === "voice" ? "Voice note" : last[1] === "sticker" ? "Sticker" : last[2];
+      return '<button class="conv' + (i === sel ? " on" : "") + '" data-i="' + i + '"><span class="av' + (ro ? " kid" : "") + '">' + (ro ? "L" : ini(x.n)) + '</span><span class="grow"><b>' + x.n + "</b><small>" + (last[0] === "me" ? "You: " : "") + esc(prev) + "</small></span>" + (x.un ? '<span class="unread" aria-label="Unread"></span>' : "") + "</button>";
+    }).join("");
+    document.getElementById("thAv").textContent = ro ? "L" : ini(c.n);
+    document.getElementById("thAv").className = "av" + (ro ? " kid" : "");
+    document.getElementById("thName").textContent = c.n;
+    document.getElementById("thSub").textContent = c.sub;
+    document.getElementById("thBadge").innerHTML = ro ? '<span class="pill pill-unsure"><i data-lucide="eye" class="i-sm"></i>Read only</span>' : "";
+
+    document.getElementById("msgs").innerHTML = c.msgs.map(function (m, i) {
+      var me = m[0] === "me" || m[0] === "k";
+      var who = ro ? '<span class="who">' + (m[0] === "k" ? "Lina" : c.t) + "</span>" : "";
+      var body;
+      if (m[1] === "sticker") body = '<span style="display:inline-flex;gap:8px;align-items:center;font-weight:700"><i data-lucide="star" class="i-sm"></i>Sticker: ' + esc(m[2]) + "</span>";
+      else if (m[1] === "voice") body = ro && m[0] === "k"
+        ? '<span class="voice locked"><i data-lucide="lock" class="i-sm"></i>' + bars() + m[2] + '</span><span style="display:block;font-size:12.5px;margin-top:4px;opacity:.8">Only the teacher can play Lina\'s voice</span>'
+        : '<span class="voice"><i data-lucide="play" class="i-sm"></i>' + bars() + m[2] + "</span>";
+      else body = esc(m[2]) + (m[4] ? (m.open ? '<span class="tr" dir="rtl" lang="ar">' + m[4] + "</span>" : '<br><button class="trb" data-tr="' + i + '"><i data-lucide="languages" class="i-sm"></i>Translate to Arabic</button>') : "");
+      return '<div class="m' + (me ? " me" : "") + '"' + (m[0] === "k" ? ' style="background:var(--apricot-100);color:var(--text);border-color:var(--apricot-100)"' : "") + ">" + who + body + '<span class="t">' + m[3] + "</span></div>";
+    }).join("");
+
+    document.getElementById("foot").innerHTML = ro
+      ? '<div class="ro"><i data-lucide="lock" class="i-sm" style="color:var(--muted)"></i><p>This is Lina\'s chat. To talk to ' + c.t + ', write to them yourself.</p><button class="btn btn-primary" id="toT"><i data-lucide="message-circle" class="i-sm"></i>Message ' + c.t + "</button></div>"
+      : '<form class="composer" id="composer"><button type="button" class="icon-btn" id="voice" aria-label="Record a voice note"><i data-lucide="mic" class="i-sm"></i></button><label for="draft" style="position:absolute;left:-9999px">Message</label><input class="input" id="draft" placeholder="Write to ' + c.n + '..." autocomplete="off"><button class="btn btn-primary" type="submit"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button></form>';
+
+    if (ro) {
+      document.getElementById("toT").onclick = function () {
+        var name = c.t; tab = "mine";
+        sel = data.mine.findIndex(function (x) { return x.n === name; });
+        setTab(); render();
+        setTimeout(function () { var d = document.getElementById("draft"); if (d) d.focus(); }, 50);
+      };
+    } else {
+      document.getElementById("composer").onsubmit = function (e) {
+        e.preventDefault(); var v = document.getElementById("draft").value.trim(); if (!v) return;
+        c.msgs.push(["me", "text", v, now()]); render();
+      };
+      document.getElementById("voice").onclick = function () { c.msgs.push(["me", "voice", "0:06", now()]); render(); toast("Voice note sent"); };
+    }
+    var box = document.getElementById("msgs"); box.scrollTop = box.scrollHeight;
+    refreshIcons();
+  }
+  function setTab() { document.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.tab === tab ? "true" : "false"); }); }
+  document.querySelectorAll("[data-tab]").forEach(function (b) {
+    b.onclick = function () { tab = b.dataset.tab; sel = 0; setTab(); document.getElementById("shell").classList.remove("open"); render(); };
+  });
+  document.getElementById("convs").onclick = function (e) {
+    var b = e.target.closest(".conv"); if (!b) return;
+    sel = +b.dataset.i; data[tab][sel].un = false; document.getElementById("shell").classList.add("open"); render();
+  };
+  document.getElementById("msgs").onclick = function (e) {
+    var b = e.target.closest("[data-tr]"); if (!b) return;
+    data[tab][sel].msgs[+b.dataset.tr].open = true; render();
+  };
+  document.getElementById("back").onclick = function () { document.getElementById("shell").classList.remove("open"); };
+  render();
+</script>
+</body>
+</html>

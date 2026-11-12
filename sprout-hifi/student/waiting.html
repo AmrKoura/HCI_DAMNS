@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Sent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center; }
+  .hero {
+    width: 150px; height: 150px; border-radius: 48px; background: var(--mint-100); color: var(--mint-700);
+    display: grid; place-items: center; position: relative;
+  }
+  .hero .i { width: 72px; height: 72px; stroke-width: 1.6; }
+  .hero::after {
+    content: ""; position: absolute; inset: -10px; border-radius: 56px; border: 3px solid var(--mint);
+    opacity: .5; animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .5; } 50% { transform: scale(1.05); opacity: .15; } }
+  .center h1 { font-size: 34px; max-width: 22ch; }
+  .center p { font-size: 19px; color: var(--muted); max-width: 40ch; }
+  .steps { display: flex; align-items: flex-start; width: min(680px, 100%); margin-top: 8px; }
+  .st { flex: 0 0 auto; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 16px; }
+  .st .b { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 20px; }
+  .done .b { background: var(--mint); color: var(--indigo); }
+  .now .b { background: var(--indigo); color: #fff; box-shadow: 0 0 0 6px var(--indigo-100); }
+  .next .b { background: var(--surface); color: var(--faint); border: 2px dashed var(--line-strong); }
+  .now span { font-weight: 700; }
+  .next span { color: var(--muted); }
+  .bar { flex: 1; height: 6px; border-radius: 3px; margin-top: 25px; background: var(--line); }
+  .bar.full { background: var(--mint); }
+  @media (max-width: 600px) { .st { width: 96px; font-size: 14px; } }
+</style>
+</head>
+<body class="kid">
+<main class="k-wrap">
+  <header class="k-top">
+    <a class="k-icon" href="home.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+  </header>
+
+  <section class="center">
+    <span class="hero"><i data-lucide="send"></i></span>
+    <h1>Sent! Frau Weber is checking your Math test.</h1>
+    <p>You will see your results here as soon as she is ready. We will tell you with a bell.</p>
+
+    <div class="steps" role="list" aria-label="Where your test is">
+      <div class="st done" role="listitem"><span class="b"><i data-lucide="check"></i></span><span>Sent</span></div>
+      <div class="bar full"></div>
+      <div class="st now" role="listitem"><span class="b">2</span><span>Teacher checking</span></div>
+      <div class="bar"></div>
+      <div class="st next" role="listitem"><span class="b">3</span><span>Ready for you</span></div>
+    </div>
+
+    <a class="btn btn-primary btn-lg" href="home.html" style="margin-top:12px"><i data-lucide="house" class="i-sm"></i>Back to Math</a>
+  </section>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

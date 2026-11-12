@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Math Test 3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+  .r-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 24px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 18px; }
+  .grew { display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: var(--r-xl); background: var(--mint-100); }
+  .grew svg { width: 84px; height: 102px; flex-shrink: 0; }
+  .grew b { font-size: 19px; color: var(--mint-700); }
+  .grade { padding: 18px 20px; display: flex; flex-direction: column; gap: 2px; }
+  .grade .num { font-size: 40px; font-weight: 700; color: var(--indigo); line-height: 1.1; }
+  .grade small { color: var(--muted); font-size: 14px; }
+  .pages { display: flex; gap: 12px; padding: 16px 18px; align-items: center; }
+  .pg { width: 64px; height: 84px; border-radius: 8px; border: 1px solid var(--line); background: #fff; padding: 9px 7px; display: flex; flex-direction: column; gap: 6px; }
+  .pg i { display: block; height: 4px; border-radius: 2px; background: #D9D6E8; }
+  .fb { display: flex; align-items: flex-start; gap: 16px; padding: 20px 22px; border-radius: var(--r-xl); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
+  .fb .f-ico { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; flex-shrink: 0; background: var(--apricot-100); color: #B3541F; }
+  .fb .f-ico .i { width: 28px; height: 28px; fill: currentColor; }
+  .fb.wish { background: var(--indigo-50); border-color: transparent; }
+  .fb.wish .f-ico { background: var(--indigo); color: #fff; }
+  .fb.wish .f-ico .i { fill: none; }
+  .fb p { font-size: 21px; line-height: 1.35; }
+  .fb .tag { margin-top: 10px; }
+  .from { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 16px; }
+  .from .avatar { width: 38px; height: 38px; font-size: 15px; background: var(--indigo-50); color: var(--indigo); }
+  .actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+  @media (max-width: 860px) { .r-grid { grid-template-columns: 1fr; } .r-grid .feedback { order: -1; } }
+</style>
+</head>
+<body class="kid">
+<main class="k-wrap">
+  <header class="k-top">
+    <a class="k-icon" href="results.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+    <div class="grow"><h1>Math Test 3 · Subtraction</h1><p class="muted">Checked on 7 October</p></div>
+  </header>
+
+  <div class="r-grid">
+    <div class="col">
+      <div class="grew"><span data-plant="bloom"></span><span><b>Your Adding plant grew!</b><br><span class="muted" style="font-size:15px">You added the tens right every time.</span></span></div>
+      <div class="k-card grade">
+        <small>My grade</small>
+        <span class="num">3</span>
+        <span style="font-size:16px">14 of 20 points</span>
+      </div>
+      <div class="k-card pages">
+        <span class="pg"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="pg"><i></i><i></i><i></i><i></i><i></i></span>
+        <span style="flex:1"><b style="font-size:16px">My exam</b><br><small class="muted" style="font-size:14px">2 pages</small></span>
+      </div>
+    </div>
+
+    <section class="col feedback" aria-labelledby="fbTitle">
+      <div class="from"><span class="avatar" aria-hidden="true">FW</span><h2 id="fbTitle" style="font-size:20px">Two stars and a wish from Frau Weber</h2></div>
+      <div class="fb"><span class="f-ico"><i data-lucide="star"></i></span><p>You added the tens perfectly!</p></div>
+      <div class="fb"><span class="f-ico"><i data-lucide="star"></i></span><p>Your working out is so neat!</p></div>
+      <div class="fb wish">
+        <span class="f-ico"><i data-lucide="wand-sparkles"></i></span>
+        <div><p><b>My wish:</b> borrowing from the tens. Let's fix it together!</p>
+          <span class="pill pill-apricot tag"><i data-lucide="droplets" class="i-sm"></i>Skill to practise: subtracting with borrowing</span></div>
+      </div>
+      <div class="actions">
+        <a class="btn btn-primary btn-lg" href="mistakes.html"><i data-lucide="search" class="i-sm"></i>See my mistakes</a>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+</body>
+</html>

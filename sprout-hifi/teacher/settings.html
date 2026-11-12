@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Teacher settings</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  .set-grid { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
+  .side { padding: 10px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 84px; }
+  .side button { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 0; border-radius: var(--r-md); background: transparent; font: 600 14.5px var(--font-ui); color: var(--muted); cursor: pointer; text-align: left; }
+  .side button:hover { background: var(--indigo-50); color: var(--indigo); }
+  .side button[aria-current="true"] { background: var(--indigo); color: #fff; }
+  .sec { padding: 24px 26px; display: flex; flex-direction: column; gap: 4px; }
+  .sec h2 { font-size: 21px; font-weight: 800; }
+  .sec > p.muted { margin-bottom: 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .row b { font-size: 15.5px; display: block; }
+  .row small { color: var(--muted); font-size: 13.5px; }
+  .sys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .sys button { text-align: left; padding: 16px; border-radius: var(--r-md); border: 1.5px solid var(--line-strong); background: var(--surface); cursor: pointer; font-family: var(--font-ui); display: flex; flex-direction: column; gap: 4px; }
+  .sys button:hover { border-color: var(--indigo-500); }
+  .sys button[aria-pressed="true"] { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-100); background: var(--indigo-50); }
+  .sys b { font-size: 16px; color: var(--text); }
+  .sys small { color: var(--muted); font-size: 13px; }
+  .keywrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: start; }
+  .keyin { width: 76px; min-height: 36px; border: 1.5px solid var(--line-strong); border-radius: var(--r-sm); text-align: center; font: 700 14px var(--font-ui); }
+  .preview { padding: 20px; border-radius: var(--r-lg); background: var(--indigo); color: #fff; display: flex; flex-direction: column; gap: 10px; }
+  .preview label { font-size: 13px; color: #CFCBEA; font-weight: 600; }
+  .preview .pts { display: flex; align-items: center; gap: 8px; }
+  .preview input { width: 74px; min-height: 40px; border-radius: var(--r-sm); border: 0; text-align: center; font: 700 17px var(--font-ui); }
+  .preview .res { font-size: 30px; font-weight: 800; }
+  .switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--line-strong); transition: background .2s ease; pointer-events: none; }
+  .switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-1); transition: transform .2s ease; }
+  .switch input:checked + span { background: var(--indigo); }
+  .switch input:checked + span::after { transform: translateX(22px); }
+  .switch input:focus-visible + span { box-shadow: var(--ring); }
+  @media (max-width: 900px) { .set-grid { grid-template-columns: 1fr; } .side { position: static; flex-direction: row; overflow-x: auto; } .side button { white-space: nowrap; } .keywrap, .sys { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="settings"></header>
+<main class="t-main">
+  <div class="t-head"><div><h1>Settings</h1><p>Your classes, grading and how the app works for you.</p></div></div>
+  <div class="set-grid">
+    <nav class="box side" aria-label="Settings sections" id="side">
+      <button data-sec="grading" aria-current="true"><i data-lucide="scale" class="i-sm"></i>Grading system</button>
+      <button data-sec="classes"><i data-lucide="school" class="i-sm"></i>Classes and subjects</button>
+      <button data-sec="ta"><i data-lucide="user-plus" class="i-sm"></i>Teaching assistant</button>
+      <button data-sec="feedback"><i data-lucide="message-square-heart" class="i-sm"></i>Feedback defaults</button>
+      <button data-sec="notif"><i data-lucide="bell" class="i-sm"></i>Notifications</button>
+      <button data-sec="account"><i data-lucide="user-round" class="i-sm"></i>Account</button>
+    </nav>
+
+    <div>
+      <section class="box sec" data-panel="grading">
+        <h2>Grading system</h2>
+        <p class="muted">Used for totals, the grade students and parents see, and exports.</p>
+        <div class="row"><div><b>Applies to</b><small>Each class can use its own system</small></div>
+          <label for="applies" style="position:absolute;left:-9999px">Applies to</label>
+          <select class="select" id="applies"><option>All my classes (3A, 3B, 4A)</option><option>3A only</option><option>3B only</option><option>4A only</option></select></div>
+        <div class="sys" role="group" aria-label="Grading system">
+          <button type="button" data-sys="de" aria-pressed="true"><b>German 1 to 6</b><small>sehr gut to ungenügend</small></button>
+          <button type="button" data-sys="en" aria-pressed="false"><b>English</b><small>Emerging, Expected, Exceeding</small></button>
+          <button type="button" data-sys="pc" aria-pressed="false"><b>Percentage only</b><small>No grade, just the %</small></button>
+        </div>
+        <div class="keywrap">
+          <div>
+            <b style="font-size:15.5px">Percentage key</b> <span class="muted" style="font-size:13.5px">Edit the numbers to match your school</span>
+            <div class="tbl-wrap" style="margin-top:8px"><table class="tbl"><thead><tr><th>Grade</th><th>Name</th><th>From</th></tr></thead><tbody id="keyRows"></tbody></table></div>
+          </div>
+          <div class="preview" aria-live="polite">
+            <label for="score">Try a score</label>
+            <div class="pts"><input id="score" type="number" min="0" max="20" value="14"><span>of 20 points = <b id="pct">70%</b></span></div>
+            <span style="font-size:13px;color:#CFCBEA">Grade shown</span>
+            <span class="res" id="result">3 (befriedigend)</span>
+            <span style="font-size:13px;color:#CFCBEA">Changing the system re-calculates grades that are not released yet.</span>
+          </div>
+        </div>
+        <div class="row"><div><b>Hide grades in Grades 1 and 2</b><small>Children see comments and skill levels only</small></div><label class="switch"><input type="checkbox" checked aria-label="Hide grades in Grades 1 and 2"><span></span></label></div>
+        <div class="row"><div><b>Marks for each step by default</b><small>Give points for correct steps even when the answer is wrong</small></div><label class="switch"><input type="checkbox" checked aria-label="Marks for each step"><span></span></label></div>
+      </section>
+
+      <section class="box sec" data-panel="classes" hidden>
+        <h2>Classes and subjects</h2>
+        <div class="row"><div><b>3A · Math</b><small>24 students</small></div><button class="btn btn-ghost">Manage</button></div>
+        <div class="row"><div><b>3B · Math and Science</b><small>23 students · you are the class teacher</small></div><button class="btn btn-ghost">Manage</button></div>
+        <div class="row"><div><b>4A · Science</b><small>25 students</small></div><button class="btn btn-ghost">Manage</button></div>
+      </section>
+
+      <section class="box sec" data-panel="ta" hidden>
+        <h2>Teaching assistant</h2>
+        <p class="muted">A teaching assistant can do step 1 (Check text). You still confirm every grade.</p>
+        <div class="row"><div><b>Ms Samir</b><small>Check text for 3A and 3B</small></div><button class="btn btn-ghost">Edit access</button></div>
+        <div class="row"><div><b>Invite a teaching assistant</b><small>They get an email to join</small></div><button class="btn btn-primary" onclick="toast('Invitation sent')">Invite</button></div>
+      </section>
+
+      <section class="box sec" data-panel="feedback" hidden>
+        <h2>Feedback defaults</h2>
+        <div class="row"><div><b>Feedback format</b><small>What the AI drafts for you</small></div><select class="select" aria-label="Feedback format"><option>Two stars and a wish</option><option>Short comment</option></select></div>
+        <div class="row"><div><b>Read-aloud language</b><small>Used for Mistake Replay lessons</small></div><select class="select" aria-label="Read-aloud language"><option>Same as the exam</option><option>German</option><option>English</option></select></div>
+        <div class="row"><div><b>Send Tonight's Activity when I confirm a weakness</b><small>Parents get one 10-minute activity</small></div><label class="switch"><input type="checkbox" aria-label="Send Tonight's Activity automatically"><span></span></label></div>
+      </section>
+
+      <section class="box sec" data-panel="notif" hidden>
+        <h2>Notifications</h2>
+        <div class="row"><div><b>New submissions</b><small>One summary a day</small></div><label class="switch"><input type="checkbox" checked aria-label="New submissions"><span></span></label></div>
+        <div class="row"><div><b>Messages from parents</b></div><label class="switch"><input type="checkbox" checked aria-label="Messages from parents"><span></span></label></div>
+        <div class="row"><div><b>Messages from students</b></div><label class="switch"><input type="checkbox" checked aria-label="Messages from students"><span></span></label></div>
+      </section>
+
+      <section class="box sec" data-panel="account" hidden>
+        <h2>Account</h2>
+        <div class="row"><div><b>Name</b><small>Frau Weber</small></div><button class="btn btn-ghost">Edit</button></div>
+        <div class="row"><div><b>Password</b></div><button class="btn btn-ghost">Change password</button></div>
+        <div class="row"><div><b>Export marks to the school system</b><small>No more copying marks by hand</small></div><button class="btn btn-ghost">Set up export</button></div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var keys = {
+    de: [["1", "sehr gut", 92], ["2", "gut", 81], ["3", "befriedigend", 67], ["4", "ausreichend", 50], ["5", "mangelhaft", 30], ["6", "ungenügend", 0]],
+    en: [["Exceeding", "Above the expected standard", 85], ["Expected", "At the expected standard", 60], ["Emerging", "Working towards it", 0]],
+    pc: [["%", "Shown as a percentage", 0]]
+  };
+  var sys = "de";
+  function drawKey() {
+    document.getElementById("keyRows").innerHTML = keys[sys].map(function (k, i) {
+      return "<tr><td><b>" + k[0] + "</b></td><td>" + k[1] + '</td><td><input class="keyin" type="number" min="0" max="100" value="' + k[2] + '" data-k="' + i + '"' + (k[2] === 0 ? " disabled" : "") + ' aria-label="Lowest percent for ' + k[0] + '"> %</td></tr>';
+    }).join("");
+    preview();
+  }
+  function preview() {
+    var s = Math.max(0, Math.min(20, +document.getElementById("score").value || 0));
+    var p = Math.round(s / 20 * 100);
+    document.getElementById("pct").textContent = p + "%";
+    if (sys === "pc") { document.getElementById("result").textContent = p + "%"; return; }
+    var hit = keys[sys].filter(function (k) { return p >= k[2]; })[0];
+    document.getElementById("result").textContent = sys === "de" ? hit[0] + " (" + hit[1] + ")" : hit[0];
+  }
+  document.querySelectorAll("[data-sys]").forEach(function (b) {
+    b.onclick = function () {
+      sys = b.dataset.sys;
+      document.querySelectorAll("[data-sys]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      drawKey(); toast("Grading system changed. Unreleased grades updated.");
+    };
+  });
+  document.getElementById("keyRows").addEventListener("input", function (e) {
+    var i = e.target.dataset.k; if (i === undefined) return;
+    keys[sys][i][2] = +e.target.value || 0; preview();
+  });
+  document.getElementById("score").oninput = preview;
+  document.querySelectorAll("#side button").forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll("#side button").forEach(function (x) { x.setAttribute("aria-current", x === b ? "true" : "false"); });
+      document.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.dataset.panel !== b.dataset.sec; });
+    };
+  });
+  drawKey();
+</script>
+</body>
+</html>

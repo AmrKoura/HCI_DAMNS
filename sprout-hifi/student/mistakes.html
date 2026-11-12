@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Mistake Replay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&family=Gochi+Hand&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+  .m-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; flex: 1; }
+  .dots { display: flex; gap: 8px; }
+  .dots span { width: 14px; height: 14px; border-radius: 50%; background: var(--line-strong); }
+  .dots span.on { background: var(--indigo); width: 34px; border-radius: 999px; }
+
+  /* the child's own paper */
+  .paper {
+    position: relative; border-radius: var(--r-xl); padding: 26px 30px; min-height: 420px;
+    background-color: #FFFEF9;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 39px, #E3E9F5 39px 40px);
+    border: 1px solid var(--line); box-shadow: var(--shadow-1);
+    display: flex; flex-direction: column;
+  }
+  .paper .tag { position: absolute; top: 16px; right: 16px; }
+  .paper .q { font-size: 15px; color: var(--muted); margin-bottom: 6px; font-family: var(--font-kid); }
+  .hw { font-family: "Gochi Hand", "Comic Sans MS", cursive; color: #2E3A8C; }
+  .sum { align-self: center; margin-top: 18px; font-size: 64px; line-height: 1.15; text-align: right; }
+  .sum .row { display: flex; justify-content: flex-end; gap: 22px; }
+  .sum .line { border-top: 4px solid #2E3A8C; margin: 4px 0; }
+  .col { position: relative; display: inline-block; width: 42px; text-align: center; border-radius: 14px; transition: background .25s ease, box-shadow .25s ease; }
+  .hl { background: rgba(255, 159, 110, .28); box-shadow: 0 0 0 4px var(--apricot); }
+  .ring { position: absolute; border: 4px solid var(--apricot); border-radius: 50%; pointer-events: none; }
+  .placeval { align-self: center; margin-top: 60px; font-size: 52px; white-space: nowrap; }
+  .placeval span { border-radius: 14px; padding: 0 8px; transition: background .25s ease, box-shadow .25s ease; }
+  .circle-note {
+    margin-top: auto; align-self: center; display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 999px; background: var(--apricot-100); color: #8A3E14; font-weight: 600; font-size: 15px;
+  }
+
+  /* explanation side */
+  .side { display: flex; flex-direction: column; gap: 16px; }
+  .ex { padding: 20px 22px; border-radius: var(--r-xl); display: flex; flex-direction: column; gap: 6px; }
+  .ex h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--muted); font-weight: 600; }
+  .ex .big { font-size: 24px; font-weight: 600; }
+  .ex.did { background: var(--apricot-100); }
+  .ex.did h3 { color: #8A3E14; }
+  .ex.right { background: var(--mint-100); }
+  .ex.right h3 { color: var(--mint-700); }
+  .ex.right .steps { display: flex; flex-direction: column; gap: 4px; font-size: 20px; }
+
+  .lesson { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+  .speaking { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .speaking.on { color: var(--indigo); font-weight: 600; }
+  .caption { min-height: 130px; padding: 18px; border-radius: var(--r-lg); background: var(--indigo-50); display: flex; flex-direction: column; gap: 8px; }
+  .caption small { color: var(--muted); font-size: 14px; }
+  .caption p { font-size: 22px; line-height: 1.4; }
+  .track { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+  .track span { display: block; height: 100%; background: var(--apricot); border-radius: 5px; transition: width .3s ease; }
+  .ctrls { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .ctrls .k-icon { width: 56px; height: 56px; border-radius: 50%; }
+  .play { width: 72px; height: 72px; border-radius: 50%; border: 0; background: var(--indigo); color: #fff; display: grid; place-items: center; cursor: pointer; }
+  .play:hover { background: var(--indigo-700); }
+  .speed { min-width: 64px; height: 44px; border-radius: 999px; border: 1.5px solid var(--line-strong); background: var(--surface); font: 700 15px var(--font-kid); color: var(--indigo); cursor: pointer; }
+
+  .nav { display: flex; gap: 12px; margin-top: auto; }
+  .nav .btn { flex: 1; }
+
+  /* try one like it */
+  .try-q { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px; border-radius: var(--r-lg); background: var(--indigo-50); }
+  .try-q .hw { font-size: 56px; }
+  .answer { font: 600 30px var(--font-kid); min-height: 68px; text-align: center; letter-spacing: .04em; }
+  .fake-cam { height: 170px; border-radius: var(--r-lg); background: radial-gradient(circle at 50% 40%, #3A3380 0%, #1E1A3C 75%); display: grid; place-items: center; color: #CFCBEA; }
+  .drop-mini { height: 170px; border-radius: var(--r-lg); border: 3px dashed var(--line-strong); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+  .verdict { padding: 18px 20px; border-radius: var(--r-lg); display: flex; gap: 14px; align-items: flex-start; }
+  .verdict.bad { background: var(--apricot-100); }
+  .verdict.good { background: var(--mint-100); }
+  .verdict .v-ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; flex-shrink: 0; }
+  .verdict.bad .v-ico { background: var(--apricot); color: var(--indigo); }
+  .verdict.good .v-ico { background: var(--mint); color: var(--indigo); }
+  .verdict b { font-size: 22px; display: block; }
+  .verdict p { font-size: 18px; }
+  .fix { margin-top: 8px; font-size: 18px; white-space: pre-line; }
+  .row-end { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 860px) { .m-grid { grid-template-columns: 1fr; } .paper { min-height: 330px; } .sum { font-size: 52px; } .placeval { font-size: 38px; } }
+</style>
+</head>
+<body class="kid">
+<main class="k-wrap">
+  <header class="k-top">
+    <a class="k-icon" href="result.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+    <div class="grow"><h1>Mistake Replay</h1><p class="muted" id="counter">Mistake 1 of 2</p></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+  </header>
+
+  <div class="m-grid">
+    <section class="paper" aria-label="Your page">
+      <span class="pill tag"><i data-lucide="file-image" class="i-sm"></i>Your page</span>
+      <div class="q" id="qLabel">Question 3</div>
+      <div id="paperBody"></div>
+      <span class="circle-note" id="circleNote"><i data-lucide="circle-dashed" class="i-sm"></i><span id="circleText">Circle: where it went wrong</span></span>
+    </section>
+
+    <section class="side">
+      <div id="explain" class="side">
+        <div class="ex did"><h3><i data-lucide="pencil" class="i-sm"></i>What you did</h3><span class="big" id="did"></span><span id="why" style="font-size:18px"></span></div>
+        <div class="ex right"><h3><i data-lucide="circle-check" class="i-sm"></i>The right way</h3><div class="steps" id="right"></div></div>
+        <button class="btn btn-ghost btn-lg" id="watch"><i data-lucide="circle-play" class="i-sm"></i>Watch it</button>
+      </div>
+
+      <div id="lesson" class="k-card lesson" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <h2 style="font-size:20px">Mini lesson</h2>
+          <span class="speaking" id="speaking"><i data-lucide="volume-2" class="i-sm"></i><span>Paused</span></span>
+        </div>
+        <div class="caption"><small id="stepNo">Step 1 of 4</small><p id="caption"></p></div>
+        <div class="track" aria-hidden="true"><span id="progress" style="width:25%"></span></div>
+        <div class="ctrls">
+          <button class="k-icon" id="back" aria-label="Back one step"><i data-lucide="skip-back"></i></button>
+          <button class="play" id="play" aria-label="Play"><i data-lucide="play" class="i-lg"></i></button>
+          <button class="k-icon" id="fwd" aria-label="Forward one step"><i data-lucide="skip-forward"></i></button>
+          <button class="speed" id="speed" aria-label="Change speed">1x</button>
+        </div>
+        <button class="btn btn-quiet" id="closeLesson"><i data-lucide="x" class="i-sm"></i>Close lesson</button>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-ghost btn-lg" id="prev"><i data-lucide="arrow-left" class="i-sm"></i>Previous</button>
+        <button class="btn btn-accent btn-lg" id="tryBtn"><i data-lucide="pencil-line" class="i-sm"></i>Try one like it</button>
+        <button class="btn btn-primary btn-lg" id="next">Next<i data-lucide="arrow-right" class="i-sm"></i></button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="overlay" id="tryOverlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="tryTitle">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h2 id="tryTitle" style="font-size:26px">Try one like it!</h2>
+      <button class="k-icon" id="tryClose" aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="try-q"><small class="muted">Same kind of question as your mistake</small><span class="hw" id="tryQ"></span></div>
+
+    <div id="tryInput">
+      <div class="seg" role="group" aria-label="How to answer" style="margin-bottom:14px">
+        <button type="button" data-mode="type" aria-pressed="true"><i data-lucide="keyboard" class="i-sm"></i>Type it</button>
+        <button type="button" data-mode="cam" aria-pressed="false"><i data-lucide="camera" class="i-sm"></i>Use camera</button>
+        <button type="button" data-mode="upload" aria-pressed="false"><i data-lucide="upload" class="i-sm"></i>Upload</button>
+      </div>
+      <form id="typeBox" style="display:flex;gap:12px">
+        <label for="answer" class="label" style="position:absolute;left:-9999px">Your answer</label>
+        <input class="input answer" id="answer" inputmode="numeric" placeholder="Your answer" autocomplete="off">
+        <button class="btn btn-primary btn-lg" type="submit">Check</button>
+      </form>
+      <div id="camBox" hidden style="display:flex;flex-direction:column;gap:12px">
+        <div class="fake-cam"><span>Show your working on paper</span></div>
+        <button class="btn btn-primary btn-lg" id="snap"><i data-lucide="camera" class="i-sm"></i>Take photo and check</button>
+      </div>
+      <label id="upBox" class="drop-mini" for="upFile" hidden>
+        <i data-lucide="image-up" class="i-lg"></i><b>Choose a photo of your answer</b>
+        <input type="file" id="upFile" accept="image/*" hidden>
+      </label>
+    </div>
+
+    <div id="tryResult" hidden></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var mistakes = [
+    {
+      q: "Question 3",
+      did: "Tens: 5 − 2 = 3",
+      why: "You forgot to borrow.",
+      right: ["2 is smaller than 7, so borrow 1 ten.", "12 − 7 = 5", "4 − 2 = 2, so the answer is 25"],
+      captions: [
+        "Let's look at question 3: 52 take away 27.",
+        "In the ones, 2 is smaller than 7. So we borrow 1 ten. Now it is 12 take away 7, which is 5.",
+        "Here you wrote 5 take away 2 is 3. But we borrowed a ten, so the 5 is now a 4.",
+        "4 take away 2 is 2. So the answer is 25."
+      ],
+      hl: ["all", "ones", "tens", "ans"],
+      labels: ["Look: the whole sum", "Look: the ones", "Look: the tens", "Look: the answer"],
+      tryQ: "43 − 18 = ?", answer: "25", common: "35",
+      tryWhy: "You took the small number from the big one in the ones.",
+      tryFix: "3 is smaller than 8, so borrow 1 ten.\n13 − 8 = 5, then 3 − 1 = 2, so the answer is 25."
+    },
+    {
+      q: "Question 2",
+      did: "7 tens 4 ones = 47",
+      why: "The tens and the ones swapped places.",
+      right: ["Tens go first, on the left: 7", "Ones go on the right: 4", "So the answer is 74"],
+      captions: [
+        "Question 2 asks for 7 tens and 4 ones.",
+        "Tens always go first, on the left. That is the 7.",
+        "You wrote 47, so the 4 and the 7 swapped places.",
+        "Ones go on the right. The answer is 74."
+      ],
+      hl: ["q", "tens", "ans", "ans"],
+      labels: ["Look: the question", "Look: the tens", "Look: your answer", "Look: the answer"],
+      tryQ: "6 tens 3 ones = ?", answer: "63", common: "36",
+      tryWhy: "The tens and the ones swapped places.",
+      tryFix: "Tens go first, on the left: 6\nOnes go on the right: 3, so the answer is 63."
+    }
+  ];
+  var idx = 0, step = 0, playing = false, timer = null, speeds = [0.75, 1, 1.25, 1.5], sp = 1, tryMode = "type";
+  var $ = function (id) { return document.getElementById(id); };
+
+  function paperHTML(i, hl) {
+    if (i === 0) {
+      var c = function (key, txt) { return '<span class="col' + (hl === key || (hl === "all") ? " hl" : "") + '">' + txt + "</span>"; };
+      return '<div class="sum hw">' +
+        '<div class="row"><span class="col"></span>' + c("tens", "5") + c("ones", "2") + "</div>" +
+        '<div class="row"><span class="col">−</span>' + c("tens", "2") + c("ones", "7") + "</div>" +
+        '<div class="line"></div>' +
+        '<div class="row"><span class="col"></span>' + c(hl === "ans" ? "ans" : "tens", "3") + c("ans", "5") + "</div></div>";
+    }
+    var s = function (key, txt) { return '<span class="' + (hl === key ? "hl" : "") + '">' + txt + "</span>"; };
+    return '<div class="placeval hw">' + s("q", s("tens", "7 tens") + " 4 ones") + " = " + s("ans", "47") + "</div>";
+  }
+
+  function speak(text) {
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = speeds[sp];
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function stopSpeak() { try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} }
+
+  function render() {
+    var m = mistakes[idx];
+    var lessonOn = !$("lesson").hidden;
+    $("counter").textContent = "Mistake " + (idx + 1) + " of " + mistakes.length;
+    $("dots").innerHTML = mistakes.map(function (_, i) { return '<span class="' + (i === idx ? "on" : "") + '"></span>'; }).join("");
+    $("qLabel").textContent = m.q;
+    $("paperBody").innerHTML = paperHTML(idx, lessonOn ? m.hl[step] : (idx === 0 ? "tens" : "ans"));
+    $("circleText").textContent = lessonOn ? m.labels[step] : "Circle: where it went wrong";
+    $("did").textContent = m.did;
+    $("why").textContent = m.why;
+    $("right").innerHTML = m.right.map(function (r) { return "<span>" + r + "</span>"; }).join("");
+    $("stepNo").textContent = "Step " + (step + 1) + " of 4";
+    $("caption").textContent = m.captions[step];
+    $("progress").style.width = ((step + 1) * 25) + "%";
+    $("speed").textContent = speeds[sp] + "x";
+    $("play").innerHTML = '<i data-lucide="' + (playing ? "pause" : "play") + '" class="i-lg"></i>';
+    $("play").setAttribute("aria-label", playing ? "Pause" : "Play");
+    $("speaking").className = "speaking" + (playing ? " on" : "");
+    $("speaking").lastChild.textContent = playing ? "Reading aloud" : "Paused";
+    $("prev").disabled = idx === 0;
+    var last = idx === mistakes.length - 1;
+    $("next").innerHTML = last ? 'Done<i data-lucide="check" class="i-sm"></i>' : 'Next<i data-lucide="arrow-right" class="i-sm"></i>';
+    refreshIcons();
+  }
+
+  function playStep() {
+    clearTimeout(timer);
+    if (!playing) return;
+    speak(mistakes[idx].captions[step]);
+    timer = setTimeout(function () {
+      if (step < 3) { step++; render(); playStep(); }
+      else { playing = false; render(); }
+    }, 4200 / speeds[sp]);
+  }
+
+  $("watch").onclick = function () { $("explain").hidden = true; $("lesson").hidden = false; step = 0; playing = true; render(); playStep(); };
+  $("closeLesson").onclick = function () { playing = false; clearTimeout(timer); stopSpeak(); $("lesson").hidden = true; $("explain").hidden = false; render(); };
+  $("play").onclick = function () { playing = !playing; if (!playing) { clearTimeout(timer); stopSpeak(); } render(); playStep(); };
+  $("back").onclick = function () { step = Math.max(0, step - 1); render(); playStep(); };
+  $("fwd").onclick = function () { step = Math.min(3, step + 1); render(); playStep(); };
+  $("speed").onclick = function () { sp = (sp + 1) % speeds.length; render(); playStep(); };
+
+  function goTo(i) { playing = false; clearTimeout(timer); stopSpeak(); idx = i; step = 0; $("lesson").hidden = true; $("explain").hidden = false; render(); }
+  $("prev").onclick = function () { if (idx > 0) goTo(idx - 1); };
+  $("next").onclick = function () {
+    if (idx < mistakes.length - 1) goTo(idx + 1);
+    else { toast("Well done! You looked at all your mistakes."); setTimeout(function () { location.href = "result.html"; }, 1200); }
+  };
+
+  /* Try one like it */
+  function setTryMode(m) {
+    tryMode = m;
+    document.querySelectorAll("#tryInput .seg button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.mode === m ? "true" : "false"); });
+    $("typeBox").hidden = m !== "type";
+    $("camBox").hidden = m !== "cam";
+    $("upBox").hidden = m !== "upload";
+  }
+  document.querySelectorAll("#tryInput .seg button").forEach(function (b) { b.onclick = function () { setTryMode(b.dataset.mode); }; });
+
+  function openTry() {
+    playing = false; clearTimeout(timer); stopSpeak(); render();
+    $("tryQ").textContent = mistakes[idx].tryQ;
+    $("answer").value = "";
+    $("tryInput").hidden = false; $("tryResult").hidden = true;
+    setTryMode("type");
+    $("tryOverlay").hidden = false;
+    setTimeout(function () { $("answer").focus(); }, 50);
+  }
+  function closeTry() { $("tryOverlay").hidden = true; $("tryBtn").focus(); }
+
+  function showResult(given) {
+    var m = mistakes[idx];
+    var ok = given === m.answer;
+    $("tryInput").hidden = true;
+    $("tryResult").hidden = false;
+    $("tryResult").innerHTML = ok
+      ? '<div class="verdict good"><span class="v-ico"><i data-lucide="party-popper"></i></span><div><b>Yes! ' + m.answer + ' is right.</b><p>You fixed it. Your Subtracting plant got some water!</p></div></div>' +
+        '<div class="row-end" style="margin-top:14px"><button class="btn btn-primary btn-lg" data-act="close">Done</button></div>'
+      : '<div class="verdict bad"><span class="v-ico"><i data-lucide="lightbulb"></i></span><div><b>Not quite yet!</b><p>You wrote <b style="display:inline;font-size:inherit">' + given + "</b>. " + m.tryWhy + '</p><p class="fix">' + m.tryFix + "</p></div></div>" +
+        '<div class="row-end" style="margin-top:14px"><button class="btn btn-ghost btn-lg" data-act="close">Close</button><button class="btn btn-primary btn-lg" data-act="again">Try again</button></div>';
+    refreshIcons();
+    if (ok) speak("Yes! " + m.answer + " is right."); else speak("Not quite yet. " + m.tryFix.replace(/\n/g, " "));
+  }
+  $("tryResult").onclick = function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    stopSpeak();
+    if (b.dataset.act === "close") closeTry();
+    if (b.dataset.act === "again") { $("tryInput").hidden = false; $("tryResult").hidden = true; $("answer").value = ""; setTryMode("type"); $("answer").focus(); }
+  };
+  $("typeBox").onsubmit = function (e) { e.preventDefault(); var v = $("answer").value.trim(); if (v) showResult(v); };
+  $("snap").onclick = function () { showResult(mistakes[idx].common); };
+  $("upFile").onchange = function () { if (this.files.length) showResult(mistakes[idx].common); this.value = ""; };
+  $("tryBtn").onclick = openTry;
+  $("tryClose").onclick = function () { stopSpeak(); closeTry(); };
+  $("tryOverlay").addEventListener("click", function (e) { if (e.target === this) { stopSpeak(); closeTry(); } });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("tryOverlay").hidden) { stopSpeak(); closeTry(); } });
+
+  render();
+</script>
+</body>
+</html>

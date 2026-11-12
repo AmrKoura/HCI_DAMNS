@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Parent settings</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/parent.css">
+<style>
+  .lay { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 22px; align-items: start; }
+  .side { position: sticky; top: 88px; padding: 8px; display: flex; flex-direction: column; }
+  .side button { display: flex; gap: 10px; align-items: center; min-height: 44px; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; font: 600 14.5px var(--font-ui); color: var(--muted); cursor: pointer; text-align: left; }
+  .side button:hover { background: var(--indigo-50); color: var(--indigo); }
+  .side button.on { background: var(--indigo-50); color: var(--indigo); box-shadow: inset 3px 0 0 var(--apricot); }
+  .sec { padding: 24px 26px; display: flex; flex-direction: column; gap: 18px; }
+  .sec h2 { font-size: 20px; font-weight: 800; }
+  .sec > p { color: var(--muted); margin-top: -10px; }
+  .row { display: flex; gap: 16px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; }
+  .row .grow { flex: 1; min-width: 0; }
+  .row b { display: block; font-size: 15px; }
+  .row small { color: var(--muted); font-size: 13.5px; display: block; }
+  .sw { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+  .sw input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; z-index: 1; }
+  .sw span { position: absolute; inset: 0; border-radius: 999px; background: var(--line-strong); transition: background .15s; }
+  .sw span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-1); transition: transform .15s; }
+  .sw input:checked + span { background: var(--indigo); }
+  .sw input:checked + span::after { transform: translateX(20px); }
+  .sw input:focus-visible + span { box-shadow: 0 0 0 3px var(--apricot); }
+  .kid { display: flex; gap: 14px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-md); }
+  .kid .ca { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--apricot-100); color: #8A3E14; flex-shrink: 0; }
+  .langs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .langs label { display: flex; gap: 10px; align-items: center; padding: 14px; border-radius: var(--r-md); border: 1.5px solid var(--line-strong); cursor: pointer; font-weight: 600; }
+  .langs label:has(input:checked) { border-color: var(--indigo); background: var(--indigo-50); }
+  .langs input { accent-color: var(--indigo); }
+  .hist { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .hist td { padding: 10px 0; border-top: 1px solid var(--line); }
+  .hist td:last-child { text-align: right; color: var(--muted); }
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .lay { grid-template-columns: 1fr; } .side { position: static; flex-direction: row; overflow-x: auto; } .side button { white-space: nowrap; } }
+  @media (max-width: 560px) { .langs, .two { grid-template-columns: 1fr; } .sec { padding: 20px; } }
+</style>
+</head>
+<body>
+<header class="p-top" data-active="settings"></header>
+<main class="p-main">
+  <div class="p-head"><div><h1>Settings</h1><p>Your account, Lina's privacy and how we contact you.</p></div></div>
+  <div class="lay">
+    <nav class="pbox side" aria-label="Settings sections" id="side">
+      <button data-s="account"><i data-lucide="circle-user-round" class="i-sm"></i>Account</button>
+      <button data-s="children"><i data-lucide="users" class="i-sm"></i>Children</button>
+      <button data-s="language"><i data-lucide="globe" class="i-sm"></i>Language</button>
+      <button data-s="notif"><i data-lucide="bell" class="i-sm"></i>Notifications</button>
+      <button data-s="privacy" class="on"><i data-lucide="shield-check" class="i-sm"></i>Privacy and consent</button>
+      <button data-s="data"><i data-lucide="database" class="i-sm"></i>Your data</button>
+    </nav>
+
+    <div>
+      <section class="pbox sec" id="s-account" hidden>
+        <h2>Account</h2>
+        <div class="two">
+          <div class="field"><label class="label" for="nm">Name</label><input class="input" id="nm" value="Sara A."></div>
+          <div class="field"><label class="label" for="em">Email</label><input class="input" id="em" type="email" value="sara.a@example.com"></div>
+          <div class="field"><label class="label" for="ph">Phone</label><input class="input" id="ph" value="+20 100 000 0000"></div>
+          <div class="field"><label class="label" for="pw">Password</label><button class="btn btn-ghost" id="pw" style="justify-content:flex-start"><i data-lucide="key-round" class="i-sm"></i>Change password</button></div>
+        </div>
+        <div><button class="btn btn-primary save">Save changes</button></div>
+      </section>
+
+      <section class="pbox sec" id="s-children" hidden>
+        <h2>Children</h2>
+        <div class="kid"><span class="ca">L</span><div style="flex:1"><b>Lina A.</b><br><span class="muted" style="font-size:14px">Grade 3B · Frau Weber, Herr Klein, Ms Hart</span></div><span class="pill pill-mint">Grades and comments</span></div>
+        <div class="kid"><span class="ca" style="background:var(--mint-100);color:var(--mint-700)">A</span><div style="flex:1"><b>Adam A.</b><br><span class="muted" style="font-size:14px">Grade 1A · Frau Roth</span></div><span class="pill pill-apricot">Comments only</span></div>
+        <div><button class="btn btn-ghost" id="addKid"><i data-lucide="plus" class="i-sm"></i>Add a child with a school code</button></div>
+      </section>
+
+      <section class="pbox sec" id="s-language" hidden>
+        <h2>Language</h2>
+        <p>Pages and teacher messages show in this language. Teachers still write in their own language.</p>
+        <div class="langs" id="langs"></div>
+      </section>
+
+      <section class="pbox sec" id="s-notif" hidden>
+        <h2>Notifications</h2>
+        <div>
+          <div class="row"><div class="grow"><b>New results</b><small>When a teacher releases a marked paper</small></div><label class="sw"><input type="checkbox" checked aria-label="New results"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Tonight's activity</b><small>A reminder at 18:00 on days with an activity</small></div><label class="sw"><input type="checkbox" checked aria-label="Tonight's activity"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Messages from teachers</b><small>Push and email</small></div><label class="sw"><input type="checkbox" checked aria-label="Messages from teachers"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Upcoming exams</b><small>Two days before each test</small></div><label class="sw"><input type="checkbox" aria-label="Upcoming exams"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Weekly summary</b><small>Every Friday by email</small></div><label class="sw"><input type="checkbox" checked aria-label="Weekly summary"><span></span></label></div>
+        </div>
+      </section>
+
+      <section class="pbox sec" id="s-privacy">
+        <h2>Privacy and consent</h2>
+        <p>You decide what happens with Lina's work. You can change this any time.</p>
+        <div>
+          <div class="row"><div class="grow"><b>Voice answers</b><small>Lina can record short voice answers for her teacher</small></div><label class="sw"><input type="checkbox" checked data-c="Voice answers" aria-label="Voice answers"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Delete voice recordings after 30 days</b><small>Only the teacher can play them, and they are deleted after 30 days</small></div><label class="sw"><input type="checkbox" checked data-c="Delete voice after 30 days" aria-label="Delete voice recordings after 30 days"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Keep exam photos until the end of the school year</b><small>Then they are deleted. Marks stay.</small></div><label class="sw"><input type="checkbox" checked data-c="Keep exam photos" aria-label="Keep exam photos until the end of the school year"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Who can see Lina's results</b><small>Lina, her teachers and you</small></div>
+            <label for="who" style="position:absolute;left:-9999px">Who can see results</label>
+            <select class="select" id="who"><option>Lina, teachers and me</option><option>Teachers and me</option></select></div>
+        </div>
+        <div>
+          <h3 style="font-size:15px;margin-bottom:4px">Consent history</h3>
+          <table class="hist"><tbody id="hist">
+            <tr><td>Voice answers turned on</td><td>2 Sep 2026</td></tr>
+            <tr><td>Exam photos kept until end of year</td><td>2 Sep 2026</td></tr>
+            <tr><td>Account created</td><td>1 Sep 2026</td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <section class="pbox sec" id="s-data" hidden>
+        <h2>Your data</h2>
+        <p>Download everything we hold about Lina, or ask us to delete it.</p>
+        <div class="row"><div class="grow"><b>Download Lina's data</b><small>Results, marked papers and messages as a ZIP file</small></div><button class="btn btn-ghost" id="dl"><i data-lucide="download" class="i-sm"></i>Download</button></div>
+        <div class="row"><div class="grow"><b>Delete Lina's account</b><small>The school is told first. This cannot be undone.</small></div><button class="btn btn-ghost" id="del" style="color:var(--flag);border-color:var(--flag-100)"><i data-lucide="trash-2" class="i-sm"></i>Ask to delete</button></div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/parent.js"></script>
+<script>
+  var side = document.getElementById("side");
+  side.onclick = function (e) {
+    var b = e.target.closest("[data-s]"); if (!b) return;
+    side.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+    document.querySelectorAll(".sec").forEach(function (s) { s.hidden = s.id !== "s-" + b.dataset.s; });
+  };
+  document.getElementById("langs").innerHTML = P_LANGS.map(function (l) {
+    return '<label' + (l[0] === "ar" ? ' style="font-family:var(--font-ar)"' : "") + '><input type="radio" name="lang" value="' + l[0] + '"' + (l[0] === P_LANG ? " checked" : "") + ">" + l[1] + "</label>";
+  }).join("");
+  document.getElementById("langs").onchange = function (e) { store("lang", e.target.value); P_LANG = e.target.value; toast("Language saved. Tonight's activity now shows in " + e.target.parentNode.textContent + "."); };
+  document.querySelectorAll("[data-c]").forEach(function (c) {
+    c.onchange = function () {
+      var row = document.createElement("tr");
+      row.innerHTML = "<td>" + c.dataset.c + (c.checked ? " turned on" : " turned off") + "</td><td>Today</td>";
+      document.getElementById("hist").prepend(row);
+      toast("Saved. Frau Weber will see the change.");
+    };
+  });
+  document.getElementById("who").onchange = function () { toast("Saved"); };
+  document.querySelectorAll(".save").forEach(function (b) { b.onclick = function () { toast("Changes saved"); }; });
+  document.getElementById("pw").onclick = function () { toast("We sent a link to change your password"); };
+  document.getElementById("addKid").onclick = function () { toast("Ask the school office for your child's code"); };
+  document.getElementById("dl").onclick = function () { toast("Your download is being prepared. We will email you the link."); };
+  document.getElementById("del").onclick = function () { toast("Request sent to the school office"); };
+</script>
+</body>
+</html>

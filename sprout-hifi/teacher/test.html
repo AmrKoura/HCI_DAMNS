@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Math Test 3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 14px; }
+  .classes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .cls { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+  .cls-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .cls-h h2 { font-size: 24px; font-weight: 800; }
+  .subm { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--indigo-50); color: var(--indigo); font-weight: 700; font-size: 14px; }
+  .subm.miss { background: var(--apricot-100); color: #8A3E14; }
+  .mini { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .mini div { padding: 10px 12px; border-radius: var(--r-md); background: var(--surface-2); font-size: 13px; color: var(--muted); font-weight: 600; }
+  .mini b { display: block; font-size: 22px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .note { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--indigo-700); font-weight: 600; }
+  .missed { display: flex; flex-direction: column; gap: 10px; }
+  .missed div { display: flex; gap: 12px; align-items: center; }
+  .missed .f-ico { width: 36px; height: 36px; border-radius: 10px; background: var(--flag-100); color: var(--flag); display: grid; place-items: center; flex-shrink: 0; }
+  @media (max-width: 860px) { .classes { grid-template-columns: 1fr; } .mini { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="papers"></header>
+<main class="t-main">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="papers.html">Papers</a><i data-lucide="chevron-right" class="i-sm"></i><span>Math Test 3 · Subtraction</span></nav>
+  <div class="t-head">
+    <div>
+      <h1>Math Test 3 · Subtraction</h1>
+      <div class="meta"><span class="pill">Test</span><span class="pill pill-apricot">Math</span><span>Grade 3 · written 7 Oct · 5 questions · 20 points</span></div>
+    </div>
+    <div class="t-actions">
+      <button class="btn btn-ghost" onclick="openKey()"><i data-lucide="key-round" class="i-sm"></i>Answer key</button>
+      <a class="btn btn-primary" href="bulk.html"><i data-lucide="layers" class="i-sm"></i>Bulk correct both classes (44)</a>
+    </div>
+  </div>
+
+  <div class="classes">
+    <section class="box cls" aria-label="Class 3A">
+      <div class="cls-h"><h2>Class 3A</h2><span class="subm miss"><i data-lucide="users" class="i-sm"></i>22 of 24 submitted · 2 missing</span></div>
+      <div class="mini"><div>Check text<b>10</b></div><div>Confirm grade<b>6</b></div><div>Red flags<b>1</b></div><div>Release<b>5</b></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="class.html" style="flex:1">Open class<i data-lucide="arrow-right" class="i-sm"></i></a><a class="btn btn-primary" href="bulk.html" style="flex:1">Bulk correct 3A</a></div>
+    </section>
+    <section class="box cls" aria-label="Class 3B" style="border-color:var(--apricot)">
+      <div class="cls-h"><h2>Class 3B</h2><span class="subm miss"><i data-lucide="users" class="i-sm"></i>22 of 23 submitted · 1 missing</span></div>
+      <div class="mini"><div>Check text<b>4</b></div><div>Confirm grade<b>12</b></div><div>Red flags<b>2</b></div><div>Release<b>4</b></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="class.html" style="flex:1">Open class<i data-lucide="arrow-right" class="i-sm"></i></a><a class="btn btn-primary" href="bulk.html" style="flex:1">Bulk correct 3B</a></div>
+      <span class="note"><i data-lucide="history" class="i-sm"></i>You stopped here: Confirm grade, 10 of 22 done</span>
+    </section>
+  </div>
+
+  <section class="box box-pad" aria-labelledby="missTitle">
+    <div class="box-h"><h2 id="missTitle">What students missed so far</h2></div>
+    <div class="missed">
+      <div><span class="f-ico"><i data-lucide="trending-down" class="i-sm"></i></span><span><b>3B:</b> 9 of 22 took the smaller digit from the bigger one instead of borrowing (Q3)</span></div>
+      <div><span class="f-ico"><i data-lucide="trending-down" class="i-sm"></i></span><span><b>3A:</b> 6 of 22 swapped the tens and the ones (Q2)</span></div>
+    </div>
+  </section>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Lina's week</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/parent.css">
+<style>
+  .tonight { display: flex; gap: 22px; align-items: center; padding: 22px 24px; border-radius: var(--r-lg); background: var(--indigo); color: #fff; position: relative; overflow: hidden; }
+  .tonight::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255, 159, 110, .18); }
+  .tonight .ic { width: 64px; height: 64px; border-radius: 18px; background: var(--apricot); color: var(--indigo); display: grid; place-items: center; flex-shrink: 0; }
+  .tonight .ic .i { width: 30px; height: 30px; }
+  .tonight .grow { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .tonight small { text-transform: uppercase; letter-spacing: .06em; font-weight: 700; font-size: 12px; color: var(--apricot); }
+  .tonight h2 { font-size: 22px; font-weight: 800; margin: 4px 0; }
+  .tonight p { color: rgba(255, 255, 255, .8); font-size: 15px; }
+  .tonight .btn { position: relative; z-index: 1; }
+  .tonight.empty-t { background: var(--surface); color: var(--text); border: 1px dashed var(--line-strong); }
+  .tonight.empty-t::after { display: none; }
+  .tonight.empty-t .ic { background: var(--surface-2); color: var(--faint); }
+  .tonight.empty-t p { color: var(--muted); }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+  .res { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+  .res:first-of-type { border-top: 0; }
+  .res .grow { flex: 1; min-width: 0; }
+  .res b { display: block; font-size: 15px; }
+  .res small { color: var(--muted); font-size: 13.5px; display: block; }
+  .ev { display: flex; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+  .ev:first-of-type { border-top: 0; }
+  .day { width: 52px; text-align: center; flex-shrink: 0; border-radius: 12px; background: var(--surface-2); padding: 6px 0; }
+  .day small { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+  .day b { font-size: 19px; color: var(--indigo); }
+  .ev .grow { flex: 1; min-width: 0; font-weight: 600; }
+  .note { color: var(--muted); max-width: 340px; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .tonight { flex-wrap: wrap; } .tonight .btn { width: 100%; } }
+</style>
+</head>
+<body>
+<header class="p-top" data-active="overview"></header>
+<main class="p-main">
+  <div class="p-head">
+    <div><h1>Lina's week</h1><p>Grade 3B · Week of 5 October 2026</p></div>
+    <label style="display:flex;align-items:center;gap:10px"><span class="muted" style="font-weight:600;font-size:14px">Subject</span>
+      <select class="select" id="subj"><option>All subjects</option><option>Math</option><option>Science</option><option>German</option><option>English</option></select>
+    </label>
+  </div>
+
+  <section id="tonightBox" aria-label="Tonight's activity"></section>
+
+  <div class="two">
+    <section class="pbox pbox-pad" aria-label="Latest results">
+      <div class="pbox-h"><h2>Latest results</h2><a href="#all">See all<i data-lucide="chevron-down" class="i-sm"></i></a></div>
+      <div id="latest"></div>
+    </section>
+    <section class="pbox pbox-pad" aria-label="Coming up">
+      <div class="pbox-h"><h2>Coming up</h2><a href="calendar.html">Calendar<i data-lucide="chevron-right" class="i-sm"></i></a></div>
+      <div id="coming"></div>
+    </section>
+  </div>
+
+  <section class="pbox" id="all" aria-label="All results">
+    <div class="pbox-pad" style="border-bottom:1px solid var(--line)"><h2 style="font-size:18px">All results</h2></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Exam</th><th>Subject</th><th>Date</th><th>Teacher's note</th><th>Grade</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/parent.js"></script>
+<script>
+  var results = [
+    { t: "Math Test 3", s: "Math", d: "7 Oct", n: "Strong on times tables. Borrowing in subtraction needs practice.", g: 3 },
+    { t: "Dictation 2", s: "German", d: "6 Oct", n: "Neat writing, only two spelling slips.", g: 2 },
+    { t: "Homework sheet 5", s: "Math", d: "5 Oct", n: "Handed in on time. All done.", g: 0 },
+    { t: "Quiz Plants", s: "Science", d: "4 Oct", n: "Knows the parts of a plant very well.", g: 1 },
+    { t: "Spelling test 3", s: "English", d: "1 Oct", n: "Good work on double letters.", g: 2 },
+    { t: "Math Test 2", s: "Math", d: "26 Sep", n: "Good with adding. Check the tens when taking away.", g: 3 }
+  ];
+  var events = [
+    { w: "Mon", d: 12, t: "Homework 6 due", s: "Math" },
+    { w: "Wed", d: 14, t: "German reading test", s: "German" },
+    { w: "Thu", d: 15, t: "Math Test 4 · Shapes", s: "Math" },
+    { w: "Tue", d: 20, t: "Zoo trip", s: "Science" },
+    { w: "Thu", d: 22, t: "Parents' evening", s: "School" },
+    { w: "Sun", d: 1, t: "Autumn break starts (Nov)", s: "School" }
+  ];
+  function grade(g) { return g ? '<span class="grade g' + g + '" aria-label="Grade ' + g + '">' + g + "</span>" : '<span class="grade none" aria-label="No grade">Done</span>'; }
+  function pill(s) { return '<span class="subj sj-' + s + '">' + s + "</span>"; }
+  function render() {
+    var f = document.getElementById("subj").value;
+    var all = f === "All subjects";
+    var R = results.filter(function (r) { return all || r.s === f; });
+    var E = events.filter(function (e) { return all || e.s === f || e.s === "School"; });
+
+    var tb = document.getElementById("tonightBox");
+    if (all || f === "Math") {
+      tb.innerHTML = '<div class="tonight"><span class="ic"><i data-lucide="moon-star" class="i"></i></span><div class="grow"><small>Tonight\'s activity · Math · 15 minutes</small><h2>Borrowing with beans and cups</h2><p>A short game at the kitchen table that helps with what Lina found hard in Test 3.</p></div><a class="btn btn-accent btn-lg" href="tonight.html">Open activity<i data-lucide="arrow-right" class="i-sm"></i></a></div>';
+    } else {
+      tb.innerHTML = '<div class="tonight empty-t"><span class="ic"><i data-lucide="moon" class="i"></i></span><div class="grow"><h2 style="font-size:18px">No activity for ' + f + ' tonight</h2><p>When a teacher suggests one, it shows up here.</p></div></div>';
+    }
+
+    document.getElementById("latest").innerHTML = R.length ? R.slice(0, 3).map(function (r) {
+      return '<div class="res">' + grade(r.g) + '<div class="grow"><b>' + r.t + "</b><small>" + r.n + "</small></div>" + pill(r.s) + "</div>";
+    }).join("") : '<div class="empty"><i data-lucide="inbox" class="i"></i><br>No results yet.</div>';
+
+    document.getElementById("coming").innerHTML = E.slice(0, 5).map(function (e) {
+      return '<div class="ev"><span class="day"><small>' + e.w + "</small><b>" + e.d + '</b></span><span class="grow">' + e.t + "</span>" + pill(e.s) + "</div>";
+    }).join("");
+
+    document.getElementById("rows").innerHTML = R.map(function (r) {
+      return "<tr><td><b>" + r.t + "</b></td><td>" + pill(r.s) + '</td><td class="muted">' + r.d + '</td><td class="note">' + r.n + "</td><td>" + grade(r.g) + "</td></tr>";
+    }).join("") || '<tr><td colspan="5" class="empty">No results for this subject yet.</td></tr>';
+    refreshIcons();
+  }
+  document.getElementById("subj").onchange = render;
+  render();
+</script>
+</body>
+</html>

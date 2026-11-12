@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Papers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  .stepcard .go { margin-left: auto; color: var(--indigo-700); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+  .name b { display: block; font-size: 15.5px; }
+  .name .pills { display: flex; gap: 6px; margin-top: 4px; }
+  .where { display: flex; flex-direction: column; gap: 6px; min-width: 220px; }
+  .where small { color: var(--muted); font-size: 13px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .open { font-weight: 700; color: var(--indigo-700); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="papers"></header>
+<main class="t-main">
+  <div class="t-head">
+    <div><h1>Papers</h1><p>Everything still to correct. Your work is saved after every step, so you can stop any time.</p></div>
+    <div class="t-actions">
+      <div class="filters">
+        <label for="fCls">Class</label>
+        <select class="select" id="fCls"><option value="All">All classes</option><option>3A</option><option>3B</option><option>4A</option></select>
+        <label for="fSub">Subject</label>
+        <select class="select" id="fSub"><option value="All">All subjects</option><option>Math</option><option>Science</option></select>
+      </div>
+      <a class="btn btn-primary" href="new-assignment.html"><i data-lucide="plus" class="i-sm"></i>New assignment</a>
+    </div>
+  </div>
+
+  <div class="steps4" id="steps"></div>
+
+  <section class="box" aria-labelledby="listTitle">
+    <div class="box-pad" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line)">
+      <h2 id="listTitle" style="font-size:18px">Tests, quizzes and homework</h2>
+      <div class="chips" role="group" aria-label="Show">
+        <button class="chip" data-st="all" aria-pressed="true">All</button>
+        <button class="chip" data-st="me" aria-pressed="false">Needs me</button>
+        <button class="chip" data-st="col" aria-pressed="false">Still collecting</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Name</th><th>Classes</th><th>Submitted</th><th>Where the papers are</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="box-pad legend" style="border-top:1px solid var(--line)">
+      <span><i style="background:var(--unsure)"></i>Check text</span>
+      <span><i style="background:var(--indigo-500)"></i>Confirm grade</span>
+      <span><i style="background:var(--flag)"></i>Red flags</span>
+      <span><i style="background:var(--mint)"></i>Ready to release</span>
+      <span><i style="background:var(--indigo)"></i>Released</span>
+    </div>
+  </section>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var rows = [
+    { test: "Math Test 3 · Subtraction", type: "Test", sub: "Math", cls: "3A", s: 22, of: 24, t: 10, g: 6, f: 1, r: 5, d: 0 },
+    { test: "Math Test 3 · Subtraction", type: "Test", sub: "Math", cls: "3B", s: 22, of: 23, t: 4, g: 12, f: 2, r: 4, d: 0 },
+    { test: "Science Quiz · Plants", type: "Quiz", sub: "Science", cls: "3B", s: 21, of: 23, t: 14, g: 0, f: 0, r: 0, d: 7 },
+    { test: "Science Quiz · Plants", type: "Quiz", sub: "Science", cls: "4A", s: 24, of: 25, t: 6, g: 3, f: 2, r: 5, d: 8 },
+    { test: "Math Homework 6", type: "Homework", sub: "Math", cls: "3A", s: 15, of: 24, col: "due Mon 12 Oct" },
+    { test: "Math Homework 6", type: "Homework", sub: "Math", cls: "3B", s: 16, of: 23, col: "due Mon 12 Oct" },
+    { test: "Science Worksheet · Water", type: "Worksheet", sub: "Science", cls: "4A", s: 9, of: 25, col: "due Wed 14 Oct" }
+  ];
+  var status = "all";
+  var labels = [["t", "Check text", "scan-text", "s1"], ["g", "Confirm grade", "list-checks", "s2"], ["f", "Review red flags", "flag", "s3"], ["r", "Ready to release", "send", "s4"]];
+
+  function render() {
+    var c = document.getElementById("fCls").value, su = document.getElementById("fSub").value;
+    var rs = rows.filter(function (x) { return (c === "All" || x.cls === c) && (su === "All" || x.sub === su); });
+    document.getElementById("steps").innerHTML = labels.map(function (l, i) {
+      var n = rs.reduce(function (a, x) { return a + (x[l[0]] || 0); }, 0);
+      return '<a class="stepcard ' + l[3] + '" href="bulk.html"><span class="n"><i data-lucide="' + l[2] + '" class="i-sm"></i></span><span><span class="num">' + n + '</span><br><span class="lbl">' + l[1] + '</span></span><span class="go">Continue<i data-lucide="arrow-right" class="i-sm"></i></span></a>';
+    }).join("");
+    var by = {}, order = [];
+    rs.forEach(function (x) {
+      if (!by[x.test]) { by[x.test] = { name: x.test, type: x.type, sub: x.sub, cls: [], s: 0, of: 0, t: 0, g: 0, f: 0, r: 0, d: 0, col: x.col }; order.push(x.test); }
+      var b = by[x.test]; b.cls.push(x.cls); b.s += x.s; b.of += x.of;
+      ["t", "g", "f", "r", "d"].forEach(function (k) { b[k] += x[k] || 0; });
+    });
+    var list = order.map(function (k) { return by[k]; }).filter(function (b) { return status === "all" || (status === "me" ? !b.col : !!b.col); });
+    document.getElementById("rows").innerHTML = list.length ? list.map(function (b) {
+      var seg = function (n, col) { return n ? '<span style="width:' + (100 * n / b.s) + '%;background:' + col + '"></span>' : ""; };
+      var where = b.col
+        ? '<span class="pill">Still collecting · ' + b.col + "</span>"
+        : '<span class="bar">' + seg(b.t, "var(--unsure)") + seg(b.g, "var(--indigo-500)") + seg(b.f, "var(--flag)") + seg(b.r, "var(--mint)") + seg(b.d, "var(--indigo)") + "</span>" +
+          "<small>Text " + b.t + " · Grade " + b.g + " · Flags " + b.f + " · Release " + b.r + " · Released " + b.d + "</small>";
+      return '<tr class="click" onclick="location.href=\'test.html\'"><td class="name"><b>' + b.name + '</b><span class="pills"><span class="pill">' + b.type + '</span><span class="pill pill-apricot">' + b.sub + "</span></span></td>" +
+        "<td>" + b.cls.join(", ") + '</td><td style="font-variant-numeric:tabular-nums">' + b.s + " of " + b.of + '</td><td><div class="where">' + where + '</div></td><td><a class="open" href="test.html">Open<i data-lucide="chevron-right" class="i-sm"></i></a></td></tr>';
+    }).join("") : '<tr><td colspan="5" class="muted" style="padding:24px 14px">Nothing here for this filter.</td></tr>';
+    refreshIcons();
+  }
+  document.querySelectorAll(".chip").forEach(function (b) {
+    b.onclick = function () {
+      status = b.dataset.st;
+      document.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      render();
+    };
+  });
+  document.getElementById("fCls").onchange = render;
+  document.getElementById("fSub").onchange = render;
+  render();
+</script>
+</body>
+</html>

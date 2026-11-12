@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .login {
+    min-height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+
+  /* brand side */
+  .brand {
+    position: relative; overflow: hidden;
+    background: var(--indigo); color: #fff;
+    padding-block: 48px;
+    padding-left: max(48px, env(safe-area-inset-left, 0px));
+    padding-right: 48px;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; font: 800 24px var(--font-ui); letter-spacing: -.01em; }
+  .logo-mark {
+    width: 44px; height: 44px; border-radius: 14px; background: var(--apricot);
+    display: grid; place-items: center; color: var(--indigo);
+  }
+  .brand h1 { color: #fff; font: 700 clamp(30px, 3.4vw, 44px)/1.12 var(--font-ui); letter-spacing: -.02em; max-width: 15ch; }
+  .brand h1 em { font-style: normal; color: var(--apricot); }
+  .brand p { color: #CFCBEA; font-size: 17px; max-width: 40ch; margin-top: 16px; }
+  .garden { width: 100%; max-width: 460px; height: auto; display: block; }
+  .facts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .fact {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+    background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .14);
+    font-size: 14px; font-weight: 600; color: #EDEBFA;
+  }
+  .fact .i { color: var(--mint); width: 18px; height: 18px; }
+
+  /* form side */
+  .panel {
+    display: flex; align-items: center; justify-content: center;
+    padding-block: 48px;
+    padding-left: max(24px, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, env(safe-area-inset-right, 0px));
+  }
+  .form { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 22px; }
+  .form h2 { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .form .sub { color: var(--muted); margin-top: 6px; }
+  .role-hint {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px; border-radius: var(--r-md); background: var(--indigo-50); color: var(--indigo-700); font-size: 14px;
+  }
+  .role-hint .i { margin-top: 1px; color: var(--indigo-500); }
+  .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--indigo); }
+  .link { font-size: 14px; font-weight: 600; color: var(--indigo-700); text-decoration: none; }
+  .link:hover { text-decoration: underline; }
+  .error {
+    display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: var(--r-md);
+    background: var(--flag-100); color: var(--flag); font-size: 14px; font-weight: 600;
+  }
+  .foot { text-align: center; font-size: 13px; color: var(--faint); }
+
+  @media (max-width: 900px) {
+    .login { grid-template-columns: 1fr; }
+    .brand { padding-block: 28px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); gap: 18px; }
+    .brand h1 { font-size: 28px; }
+    .brand p, .garden, .facts { display: none; }
+    .panel { align-items: flex-start; padding-block: 32px; }
+  }
+</style>
+</head>
+<body>
+<main class="login">
+
+  <section class="brand" aria-label="About Sprout">
+    <div class="logo">
+      <span class="logo-mark"><i data-lucide="sprout"></i></span>
+      <span data-app-name>Sprout</span>
+    </div>
+
+    <div>
+      <h1>Every paper checked by a teacher. Every mistake a <em>next step</em>.</h1>
+      <p>Children upload their exams, the AI helps with the marking, and the teacher has the final word before anything is shared.</p>
+    </div>
+
+    <svg class="garden" viewBox="0 0 460 210" fill="none" aria-hidden="true">
+      <circle cx="388" cy="52" r="34" fill="#FF9F6E" opacity=".95"/>
+      <rect x="0" y="184" width="460" height="26" rx="13" fill="#3A3380"/>
+      <!-- tall plant -->
+      <path d="M92 184 V78" stroke="#7DD3B0" stroke-width="6" stroke-linecap="round"/>
+      <path d="M92 132 C60 128 46 106 48 88 C72 88 90 104 92 132 Z" fill="#7DD3B0"/>
+      <path d="M92 110 C120 106 134 86 132 68 C108 70 94 86 92 110 Z" fill="#7DD3B0"/>
+      <circle cx="92" cy="70" r="14" fill="#FF9F6E"/>
+      <!-- middle plant -->
+      <path d="M210 184 V112" stroke="#7DD3B0" stroke-width="6" stroke-linecap="round"/>
+      <path d="M210 152 C184 150 172 132 174 118 C194 118 208 132 210 152 Z" fill="#7DD3B0"/>
+      <path d="M210 134 C234 130 244 114 242 100 C222 102 212 114 210 134 Z" fill="#7DD3B0"/>
+      <!-- sprout -->
+      <path d="M318 184 V150" stroke="#7DD3B0" stroke-width="6" stroke-linecap="round"/>
+      <path d="M318 160 C302 158 294 148 296 138 C310 138 316 148 318 160 Z" fill="#7DD3B0"/>
+      <path d="M318 160 C334 158 342 148 340 138 C326 138 320 148 318 160 Z" fill="#7DD3B0"/>
+      <!-- pots -->
+      <path d="M66 184 h52 l-6 -18 h-40 z" fill="#5B54A8" transform="translate(0 0)"/>
+      <path d="M184 184 h52 l-6 -18 h-40 z" fill="#5B54A8"/>
+      <path d="M292 184 h52 l-6 -18 h-40 z" fill="#5B54A8"/>
+    </svg>
+
+    <div class="facts">
+      <span class="fact"><i data-lucide="scan-line"></i>Snap and send exams</span>
+      <span class="fact"><i data-lucide="shield-check"></i>Teacher approves every grade</span>
+      <span class="fact"><i data-lucide="languages"></i>English, German, Arabic</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <form class="form" id="loginForm" novalidate>
+      <div>
+        <h2>Welcome back</h2>
+        <p class="sub">Choose who you are, then log in.</p>
+      </div>
+
+      <div class="field">
+        <span class="label" id="roleLabel">I am a</span>
+        <div class="seg" role="group" aria-labelledby="roleLabel">
+          <button type="button" data-role="student" aria-pressed="true"><i data-lucide="backpack" class="i-sm"></i>Student</button>
+          <button type="button" data-role="teacher" aria-pressed="false"><i data-lucide="presentation" class="i-sm"></i>Teacher</button>
+          <button type="button" data-role="parent" aria-pressed="false"><i data-lucide="users" class="i-sm"></i>Parent</button>
+        </div>
+      </div>
+
+      <div class="role-hint" id="roleHint">
+        <i data-lucide="info" class="i-sm"></i>
+        <span id="roleHintText">Use the username on the card your teacher gave you.</span>
+      </div>
+
+      <div class="field">
+        <label class="label" for="username">Username</label>
+        <div class="input-wrap">
+          <i data-lucide="user-round" class="i-sm lead"></i>
+          <input class="input" id="username" name="username" autocomplete="username" placeholder="lina.a" value="lina.a">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="row-between">
+          <label class="label" for="password">Password</label>
+          <a class="link" href="#forgot" id="forgotLink">Forgot password?</a>
+        </div>
+        <div class="input-wrap">
+          <i data-lucide="lock-keyhole" class="i-sm lead"></i>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" value="sprout123">
+          <button type="button" class="icon-btn trail" id="togglePw" aria-label="Show password" style="width:38px;height:38px;border:0;background:transparent">
+            <i data-lucide="eye" class="i-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="error" id="error" hidden><i data-lucide="circle-alert" class="i-sm"></i><span>Enter your username and password to continue.</span></div>
+
+      <div class="row-between">
+        <label class="check"><input type="checkbox" id="remember"> Keep me logged in</label>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-block" type="submit" id="loginBtn">
+        Log in as student <i data-lucide="arrow-right" class="i-sm"></i>
+      </button>
+
+      <p class="foot">Prototype: any username and password work.</p>
+    </form>
+  </section>
+</main>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+  var roles = {
+    student: { dest: "student/subjects.html", user: "lina.a", hint: "Use the username on the card your teacher gave you." },
+    teacher: { dest: "teacher/dashboard.html", user: "k.weber", hint: "Use your school email name, for example k.weber." },
+    parent:  { dest: "parent/overview.html", user: "mona.a", hint: "Use the account you made with the code from the school letter." }
+  };
+  var role = "student";
+
+  function setRole(r) {
+    role = r;
+    document.querySelectorAll(".seg button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.role === r ? "true" : "false");
+    });
+    document.getElementById("roleHintText").textContent = roles[r].hint;
+    var u = document.getElementById("username");
+    u.placeholder = roles[r].user;
+    u.value = roles[r].user;
+    document.getElementById("loginBtn").firstChild.textContent = "Log in as " + r + " ";
+    document.getElementById("error").hidden = true;
+  }
+
+  document.querySelectorAll(".seg button").forEach(function (b) {
+    b.addEventListener("click", function () { setRole(b.dataset.role); });
+  });
+
+  document.getElementById("togglePw").addEventListener("click", function () {
+    var pw = document.getElementById("password");
+    var show = pw.type === "password";
+    pw.type = show ? "text" : "password";
+    this.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    this.innerHTML = '<i data-lucide="' + (show ? "eye-off" : "eye") + '" class="i-sm"></i>';
+    refreshIcons();
+  });
+
+  document.getElementById("forgotLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    toast("A reset link would be sent to your school email.");
+  });
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = document.getElementById("username").value.trim();
+    var p = document.getElementById("password").value.trim();
+    if (!u || !p) { document.getElementById("error").hidden = false; return; }
+    store("role", role);
+    window.location.href = roles[role].dest;
+  });
+</script>
+</body>
+</html>

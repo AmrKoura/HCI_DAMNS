@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  .resume {
+    display: flex; align-items: center; gap: 16px; padding: 18px 22px; border-radius: var(--r-lg);
+    background: var(--indigo); color: #fff; text-decoration: none;
+  }
+  .resume:hover { background: var(--indigo-700); }
+  .resume .r-ico { width: 46px; height: 46px; border-radius: 14px; background: rgba(255, 255, 255, .12); display: grid; place-items: center; flex-shrink: 0; }
+  .resume small { color: #CFCBEA; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .resume b { display: block; font-size: 17px; }
+  .resume .grow { flex: 1; min-width: 0; }
+  .resume .prog { width: 160px; }
+  .resume .bar { background: rgba(255, 255, 255, .18); }
+  .dash { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .find { display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .find:last-child { border-bottom: 0; }
+  .find .f-ico { width: 40px; height: 40px; border-radius: 12px; background: var(--flag-100); color: var(--flag); display: grid; place-items: center; flex-shrink: 0; }
+  .find .f-ico.q { background: var(--unsure-100); color: var(--unsure); }
+  .find .grow { flex: 1; min-width: 0; }
+  .find b { font-size: 15.5px; font-weight: 600; display: block; }
+  .find small { color: var(--muted); font-size: 13.5px; }
+  .find a { font-weight: 600; font-size: 14px; color: var(--indigo-700); text-decoration: none; white-space: nowrap; }
+  .find a:hover { text-decoration: underline; }
+  .coming { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .coming:last-of-type { border-bottom: 0; }
+  .coming b { font-size: 15px; }
+  .coming small { color: var(--muted); font-size: 13.5px; }
+  .empty { padding: 18px 0; color: var(--muted); }
+  @media (max-width: 960px) { .dash { grid-template-columns: 1fr; } .resume .prog { display: none; } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="dashboard"></header>
+<main class="t-main">
+  <div class="t-head">
+    <div><h1>Good evening, Frau Weber</h1><p id="scope">All classes · all subjects</p></div>
+    <div class="filters">
+      <label for="fCls">Class</label>
+      <select class="select" id="fCls"><option value="All">All classes</option><option>3A</option><option>3B</option><option>4A</option></select>
+      <label for="fSub">Subject</label>
+      <select class="select" id="fSub"><option value="All">All subjects</option><option>Math</option><option>Science</option></select>
+    </div>
+  </div>
+
+  <a class="resume" id="resume" href="bulk.html">
+    <span class="r-ico"><i data-lucide="history"></i></span>
+    <span class="grow"><small>Continue where you stopped</small><b>Math Test 3 · Class 3B · Confirm grade</b></span>
+    <span class="prog"><span style="font-size:13px;color:#CFCBEA">10 of 22 papers done</span><span class="bar" style="margin-top:6px"><span style="width:45%;background:var(--apricot)"></span></span></span>
+    <span class="btn btn-accent">Continue<i data-lucide="arrow-right" class="i-sm"></i></span>
+  </a>
+
+  <div class="steps4" id="steps"></div>
+
+  <div class="dash">
+    <section class="box box-pad" aria-labelledby="findTitle">
+      <div class="box-h"><h2 id="findTitle">Findings</h2><button class="btn btn-quiet" id="showAll" style="min-height:36px">Show all</button></div>
+      <div id="findings"></div>
+    </section>
+
+    <section class="box box-pad" aria-labelledby="comingTitle">
+      <div class="box-h"><h2 id="comingTitle">Coming in</h2><span class="muted" style="font-size:13px">Open assignments</span></div>
+      <div id="coming"></div>
+      <a class="btn btn-primary btn-block" href="new-assignment.html" style="margin-top:12px"><i data-lucide="plus" class="i-sm"></i>New assignment</a>
+    </section>
+  </div>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var work = [
+    { cls: "3B", sub: "Math", t: 4, g: 12, f: 2, r: 4 },
+    { cls: "3A", sub: "Math", t: 10, g: 6, f: 1, r: 5 },
+    { cls: "3B", sub: "Science", t: 14, g: 0, f: 0, r: 0 },
+    { cls: "4A", sub: "Science", t: 6, g: 3, f: 2, r: 5 }
+  ];
+  var findings = [
+    { cls: "3B", sub: "Math", test: "Math Test 3", text: "9 of 22 forgot to borrow in subtraction", kind: "gap" },
+    { cls: "3A", sub: "Math", test: "Math Test 3", text: "6 of 22 swapped tens and ones", kind: "gap" },
+    { cls: "4A", sub: "Science", test: "Science Quiz · Plants", text: "11 of 24 mixed up roots and stem", kind: "gap" },
+    { cls: "3B", sub: "Science", test: "Science Quiz · Plants", text: "17 of 21 missed Q5. The question may be unclear.", kind: "q" },
+    { cls: "3A", sub: "Math", test: "Homework 6", text: "5 of 18 left the word problem empty", kind: "gap" }
+  ];
+  var coming = [
+    { cls: ["3A", "3B"], sub: "Math", name: "Math Homework 6 · 3A, 3B", info: "31 of 47 submitted · due Mon 12 Oct", pct: 66 },
+    { cls: ["4A"], sub: "Science", name: "Science Worksheet · Water · 4A", info: "9 of 25 submitted · due Wed 14 Oct", pct: 36 },
+    { cls: ["3B"], sub: "Math", name: "Math Test 4 · Shapes · 3B", info: "Opens Thu 15 Oct", pct: 0 }
+  ];
+  var all = false;
+  var labels = [["t", "Papers to check", "scan-text", "s1"], ["g", "Grades to confirm", "list-checks", "s2"], ["f", "Red flags to review", "flag", "s3"], ["r", "Ready to release", "send", "s4"]];
+
+  function render() {
+    var c = document.getElementById("fCls").value, s = document.getElementById("fSub").value;
+    var ok = function (x) { return (c === "All" || x.cls === c || (x.cls.indexOf && x.cls.indexOf(c) > -1)) && (s === "All" || x.sub === s); };
+    document.getElementById("scope").textContent = (c === "All" ? "All classes" : "Class " + c) + " · " + (s === "All" ? "all subjects" : s);
+    var w = work.filter(ok);
+    document.getElementById("steps").innerHTML = labels.map(function (l, i) {
+      var n = w.reduce(function (a, x) { return a + x[l[0]]; }, 0);
+      return '<a class="stepcard ' + l[3] + '" href="papers.html"><span class="n"><i data-lucide="' + l[2] + '" class="i-sm"></i></span><span><span class="num">' + n + '</span><br><span class="lbl">Step ' + (i + 1) + " · " + l[1] + "</span></span></a>";
+    }).join("");
+    var f = findings.filter(ok);
+    var shown = all ? f : f.slice(0, 3);
+    document.getElementById("findings").innerHTML = shown.length ? shown.map(function (x) {
+      return '<div class="find"><span class="f-ico' + (x.kind === "q" ? " q" : "") + '"><i data-lucide="' + (x.kind === "q" ? "circle-help" : "trending-down") + '" class="i-sm"></i></span>' +
+        '<span class="grow"><b>' + x.text + "</b><small>" + x.test + " · " + x.cls + " · " + x.sub + '</small></span><a href="class.html">See papers</a></div>';
+    }).join("") : '<p class="empty">Nothing to show for this class and subject yet.</p>';
+    var btn = document.getElementById("showAll");
+    btn.hidden = f.length <= 3;
+    btn.textContent = all ? "Show top 3" : "Show all " + f.length;
+    var cm = coming.filter(ok);
+    document.getElementById("coming").innerHTML = cm.length ? cm.map(function (x) {
+      return '<div class="coming"><b>' + x.name + "</b><small>" + x.info + '</small><span class="bar"><span style="width:' + x.pct + '%;background:var(--indigo-500)"></span></span></div>';
+    }).join("") : '<p class="empty">No open assignments here.</p>';
+    document.getElementById("resume").hidden = !((c === "All" || c === "3B") && (s === "All" || s === "Math"));
+    refreshIcons();
+  }
+  document.getElementById("fCls").onchange = render;
+  document.getElementById("fSub").onchange = render;
+  document.getElementById("showAll").onclick = function () { all = !all; render(); };
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · New assignment</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<style>
+  .na { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+  .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  textarea.input { min-height: 96px; padding: 12px 16px; resize: vertical; font-family: var(--font-ui); }
+  .classes { display: flex; gap: 10px; flex-wrap: wrap; }
+  .classes label { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--r-md); border: 1.5px solid var(--line-strong); cursor: pointer; font-weight: 600; }
+  .classes label:has(input:checked) { border-color: var(--indigo); background: var(--indigo-50); }
+  .classes label.off { opacity: .5; cursor: not-allowed; }
+  .classes input { accent-color: var(--indigo); width: 18px; height: 18px; }
+  .radios { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radios label { flex: 1; min-width: 180px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-md); border: 1.5px solid var(--line-strong); cursor: pointer; }
+  .radios label:has(input:checked) { border-color: var(--indigo); background: var(--indigo-50); }
+  .radios input { accent-color: var(--indigo); margin-top: 3px; }
+  .radios small { display: block; color: var(--muted); font-size: 13px; }
+  .drop { display: flex; align-items: center; gap: 16px; padding: 18px; border-radius: var(--r-lg); border: 2px dashed var(--line-strong); background: var(--surface); cursor: pointer; }
+  .drop:hover { border-color: var(--indigo-500); background: var(--indigo-50); }
+  .drop .di { width: 48px; height: 48px; border-radius: 14px; background: var(--indigo-50); color: var(--indigo); display: grid; place-items: center; flex-shrink: 0; }
+  .drop.has { border-style: solid; border-color: var(--mint); background: var(--mint-100); }
+  .key input, .key select { width: 100%; min-height: 38px; padding: 0 10px; border: 1.5px solid var(--line-strong); border-radius: var(--r-sm); font: 400 14px var(--font-ui); background: var(--surface); }
+  .key td { padding: 8px 8px; }
+  .key .cb { width: 18px; height: 18px; accent-color: var(--indigo); }
+  .foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 6px; }
+  .foot .note { flex: 1; color: var(--muted); font-size: 14px; display: flex; gap: 8px; align-items: center; min-width: 220px; }
+  @media (max-width: 980px) { .na { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="papers"></header>
+<main class="t-main">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="papers.html">Papers</a><i data-lucide="chevron-right" class="i-sm"></i><span>New assignment</span></nav>
+  <div class="t-head"><div><h1>New assignment</h1><p>Students will see it in their "My exams to send" list.</p></div></div>
+
+  <form class="na" id="form">
+    <section class="box box-pad col" aria-label="Details">
+      <div class="field"><span class="label" id="typeL">Type</span>
+        <div class="seg" role="group" aria-labelledby="typeL" id="types">
+          <button type="button" aria-pressed="false">Quiz</button><button type="button" aria-pressed="true">Test</button><button type="button" aria-pressed="false">Homework</button><button type="button" aria-pressed="false">Exam</button>
+        </div>
+      </div>
+      <div class="field"><label class="label" for="title">Title</label><input class="input" id="title" value="Math Test 4 · Shapes"></div>
+      <div class="row2">
+        <div class="field"><label class="label" for="subj">Subject</label><select class="select input" id="subj" style="border-radius:var(--r-md);min-height:50px"><option>Math</option><option>Science</option></select></div>
+        <div class="field"><label class="label" for="due">Due date</label><input class="input" id="due" type="date" value="2026-10-15"></div>
+      </div>
+      <div class="field"><span class="label">Classes</span>
+        <div class="classes">
+          <label><input type="checkbox"> 3A</label>
+          <label><input type="checkbox" checked> 3B</label>
+          <label class="off"><input type="checkbox" disabled> 4A <span class="muted" style="font-weight:500">Science only</span></label>
+        </div>
+      </div>
+      <div class="field"><label class="label" for="ins">Instructions for students</label><textarea class="input" id="ins">Do the test in class. Then take one photo of each page and press Send.</textarea></div>
+      <div class="field"><span class="label">How it gets handed in</span>
+        <div class="radios">
+          <label><input type="radio" name="hand" checked><span><b>Students send photos</b><small>On the school iPads or at home</small></span></label>
+          <label><input type="radio" name="hand"><span><b>I scan the class set</b><small>You upload all papers at once</small></span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="col">
+      <label class="drop" id="drop" for="paper">
+        <span class="di"><i data-lucide="file-up"></i></span>
+        <span style="flex:1"><b id="dropT">Question paper</b><br><span class="muted" style="font-size:14px" id="dropS">Drag a PDF or photo here. The AI suggests the answer key below from it.</span></span>
+        <span class="btn btn-ghost">Choose file</span>
+        <input type="file" id="paper" accept="application/pdf,image/*" hidden>
+      </label>
+
+      <div class="box">
+        <div class="box-pad" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line)">
+          <h2 style="font-size:18px">Answer key</h2>
+          <span class="muted" style="font-size:13px">Each question has a skill, so results add up per skill</span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl key">
+            <thead><tr><th>Q</th><th>Correct answer</th><th style="width:90px">Points</th><th>Skill</th><th>Marks per step</th><th></th></tr></thead>
+            <tbody id="keyRows"></tbody>
+          </table>
+        </div>
+        <div class="box-pad" style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line)">
+          <button type="button" class="btn btn-ghost" id="addQ"><i data-lucide="plus" class="i-sm"></i>Add question</button>
+          <b id="totalPts">Total: 12 points</b>
+        </div>
+      </div>
+
+      <div class="foot">
+        <span class="note"><i data-lucide="info" class="i-sm"></i>You can change the answer key later. Unreleased papers get re-marked.</span>
+        <a class="btn btn-quiet" href="papers.html">Cancel</a>
+        <button type="button" class="btn btn-ghost" id="draft">Save draft</button>
+        <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="send" class="i-sm"></i>Publish to students</button>
+      </div>
+    </section>
+  </form>
+</main>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  var qs = [
+    { a: "Triangle", p: 2, s: "Naming shapes", m: false },
+    { a: "4 corners, 4 sides", p: 4, s: "Properties of shapes", m: true },
+    { a: "12 cm", p: 4, s: "Perimeter", m: true },
+    { a: "Line of symmetry drawn", p: 2, s: "Symmetry", m: false }
+  ];
+  var skills = ["Naming shapes", "Properties of shapes", "Perimeter", "Symmetry", "New skill..."];
+  function render() {
+    document.getElementById("keyRows").innerHTML = qs.map(function (q, i) {
+      return "<tr><td><b>" + (i + 1) + '</b></td><td><input data-i="' + i + '" data-f="a" value="' + q.a + '" aria-label="Answer ' + (i + 1) + '"></td>' +
+        '<td><input data-i="' + i + '" data-f="p" type="number" min="1" value="' + q.p + '" aria-label="Points ' + (i + 1) + '"></td>' +
+        '<td><select data-i="' + i + '" data-f="s" aria-label="Skill ' + (i + 1) + '">' + skills.map(function (s) { return "<option" + (s === q.s ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></td>" +
+        '<td><label style="display:inline-flex;gap:6px;align-items:center;font-size:14px"><input class="cb" type="checkbox" data-i="' + i + '" data-f="m"' + (q.m ? " checked" : "") + "> Yes</label></td>" +
+        '<td><button type="button" class="icon-btn" style="width:34px;height:34px" data-del="' + i + '" aria-label="Remove question ' + (i + 1) + '"><i data-lucide="trash-2" class="i-sm"></i></button></td></tr>';
+    }).join("");
+    document.getElementById("totalPts").textContent = "Total: " + qs.reduce(function (a, q) { return a + (+q.p || 0); }, 0) + " points";
+    refreshIcons();
+  }
+  document.getElementById("keyRows").addEventListener("input", function (e) {
+    var t = e.target, i = t.dataset.i; if (i === undefined) return;
+    qs[i][t.dataset.f] = t.type === "checkbox" ? t.checked : t.value;
+    document.getElementById("totalPts").textContent = "Total: " + qs.reduce(function (a, q) { return a + (+q.p || 0); }, 0) + " points";
+  });
+  document.getElementById("keyRows").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]"); if (b) { qs.splice(+b.dataset.del, 1); render(); }
+  });
+  document.getElementById("addQ").onclick = function () { qs.push({ a: "", p: 2, s: "Naming shapes", m: false }); render(); };
+  document.querySelectorAll("#types button").forEach(function (b) {
+    b.onclick = function () { document.querySelectorAll("#types button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
+  });
+  document.getElementById("paper").onchange = function () {
+    if (!this.files.length) return;
+    document.getElementById("drop").classList.add("has");
+    document.getElementById("dropT").textContent = this.files[0].name;
+    document.getElementById("dropS").textContent = "Uploaded. The AI suggested 4 questions below. Check them before publishing.";
+  };
+  document.getElementById("draft").onclick = function () { toast("Draft saved"); };
+  document.getElementById("form").onsubmit = function (e) {
+    e.preventDefault();
+    toast("Published to class 3B. Students can send it now.");
+    setTimeout(function () { location.href = "papers.html"; }, 1300);
+  };
+  render();
+</script>
+</body>
+</html>
