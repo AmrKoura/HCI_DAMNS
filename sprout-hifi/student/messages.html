@@ -45,10 +45,6 @@
   .voice { display: flex; align-items: center; gap: 12px; }
   .voice .p { width: 40px; height: 40px; border-radius: 50%; background: var(--indigo-50); color: var(--indigo); display: grid; place-items: center; }
   .me .voice .p { background: rgba(255, 255, 255, .18); color: #fff; }
-  .wave { display: flex; align-items: center; gap: 3px; }
-  .wave i { display: block; width: 4px; border-radius: 2px; background: currentColor; opacity: .6; }
-  .say { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--indigo); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
-  .say:hover { border-color: var(--indigo-500); background: var(--indigo-50); }
   .replybar {
     display: flex; align-items: center; gap: 12px; padding-block: 10px;
     padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px));
@@ -66,11 +62,6 @@
   .round { width: 58px; height: 58px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; background: var(--indigo); color: #fff; }
   .round:hover { background: var(--indigo-700); }
   .round.mic { background: var(--apricot); color: var(--indigo); }
-  .rec { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-  .rec .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--flag); animation: blink 1s infinite; }
-  @keyframes blink { 50% { opacity: .2; } }
-  .rec .wave i { background: var(--indigo); opacity: 1; animation: bounce 1s ease-in-out infinite; }
-  @keyframes bounce { 50% { transform: scaleY(.4); } }
 </style>
 </head>
 <body class="kid">
@@ -96,21 +87,9 @@
   </form>
 </div>
 
-<div class="overlay" id="recOverlay" hidden>
-  <div class="dialog rec" role="dialog" aria-modal="true" aria-labelledby="recTitle" style="width:min(440px,100%)">
-    <div style="display:flex;align-items:center;gap:10px"><span class="dot"></span><h2 id="recTitle" style="font-size:24px">Recording <span id="recTime">0:00</span></h2></div>
-    <div class="wave" style="height:44px"><i style="height:16px"></i><i style="height:34px;animation-delay:.1s"></i><i style="height:24px;animation-delay:.2s"></i><i style="height:40px;animation-delay:.3s"></i><i style="height:18px;animation-delay:.4s"></i><i style="height:30px;animation-delay:.5s"></i><i style="height:14px;animation-delay:.6s"></i><i style="height:26px;animation-delay:.7s"></i></div>
-    <p class="muted" id="recReply" hidden></p>
-    <p class="muted" style="font-size:15px"><i data-lucide="lock" class="i-sm" style="vertical-align:-3px"></i> Only Frau Weber can hear this.</p>
-    <div style="display:flex;gap:12px;width:100%">
-      <button class="btn btn-ghost btn-lg" id="recCancel" style="flex:1">Cancel</button>
-      <button class="btn btn-primary btn-lg" id="recSend" style="flex:1"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button>
-    </div>
-  </div>
-</div>
-
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/talkback.js"></script>
 <script>
   var msgs = [
     { id: 1, me: false, kind: "sticker", text: "Super effort!", time: "9:02" },
@@ -118,7 +97,9 @@
     { id: 3, me: false, kind: "text", text: "You worked really hard on Test 3. I am proud of you!", time: "9:03" },
     { id: 4, me: true, kind: "text", text: "Thank you Frau Weber!", time: "9:10", quote: 3 }
   ];
-  var replyId = null, recTimer = null, recSec = 0;
+  /* answers sent from Mistake Replay (Talk Back) */
+  talkbackNotes().forEach(function (n) { msgs.push({ id: n.id, me: true, kind: n.kind, text: n.text, time: n.time, about: n.about }); });
+  var replyId = null;
   var $ = function (id) { return document.getElementById(id); };
   function find(id) { return msgs.filter(function (m) { return m.id === id; })[0]; }
   function short(m) {
@@ -135,6 +116,7 @@
     t.innerHTML = '<span class="day">Today</span>' + msgs.map(function (m) {
       var inner = "";
       if (m.quote) inner += '<span class="quote">' + esc(short(find(m.quote))) + "</span>";
+      if (m.about) inner += '<span class="quote">' + esc(m.about) + "</span>";
       if (m.kind === "text") inner += esc(m.text);
       if (m.kind === "sticker") inner += '<span class="sticker"><span class="s"><i data-lucide="star"></i></span><b>' + esc(m.text) + "</b></span>";
       if (m.kind === "voice") inner += '<span class="voice"><span class="p"><i data-lucide="play" class="i-sm"></i></span><span class="wave">' +
@@ -155,7 +137,7 @@
   $("thread").addEventListener("click", function (e) {
     var say = e.target.closest("[data-say]");
     if (say) {
-      try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(find(+say.dataset.say).text)); } catch (err) {}
+      Talk.speak(find(+say.dataset.say).text);
       return;
     }
     var b = e.target.closest(".bubble");
@@ -175,15 +157,12 @@
   $("composer").onsubmit = function (e) { e.preventDefault(); var v = $("draft").value.trim(); if (v) add("text", v); };
 
   $("micBtn").onclick = function () {
-    recSec = 0; $("recTime").textContent = "0:00";
     var r = find(replyId);
-    $("recReply").hidden = !r; if (r) $("recReply").textContent = "Answering: " + short(r);
-    $("recOverlay").hidden = false;
-    recTimer = setInterval(function () { recSec++; $("recTime").textContent = "0:" + ("0" + recSec).slice(-2); }, 1000);
+    Talk.record({
+      reply: r ? "Answering: " + short(r) : "",
+      onSend: function (s, len) { add("voice", len); toast("Voice note sent"); }
+    });
   };
-  function stopRec() { clearInterval(recTimer); $("recOverlay").hidden = true; }
-  $("recCancel").onclick = stopRec;
-  $("recSend").onclick = function () { var s = Math.max(recSec, 1); stopRec(); add("voice", "0:" + ("0" + s).slice(-2)); toast("Voice note sent"); };
 
   render();
 </script>

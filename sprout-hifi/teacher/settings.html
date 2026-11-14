@@ -104,7 +104,7 @@
       <section class="box sec" data-panel="feedback" hidden>
         <h2>Feedback defaults</h2>
         <div class="row"><div><b>Feedback format</b><small>What the AI drafts for you</small></div><select class="select" aria-label="Feedback format"><option>Two stars and a wish</option><option>Short comment</option></select></div>
-        <div class="row"><div><b>Read-aloud language</b><small>Used for Mistake Replay lessons</small></div><select class="select" aria-label="Read-aloud language"><option>Same as the exam</option><option>German</option><option>English</option></select></div>
+        <div class="row"><div><b>Read-aloud language</b><small>Used for Mistake Replay lessons</small></div><select class="select" id="readLang" aria-label="Read-aloud language"><option value="exam">Same as the exam</option><option value="de">German</option><option value="en">English</option></select></div>
         <div class="row"><div><b>Send Tonight's Activity when I confirm a weakness</b><small>Parents get one 10-minute activity</small></div><label class="switch"><input type="checkbox" aria-label="Send Tonight's Activity automatically"><span></span></label></div>
       </section>
 
@@ -166,6 +166,10 @@
       document.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.dataset.panel !== b.dataset.sec; });
     };
   });
+  /* read by the student's result page and Mistake Replay */
+  var readLang = document.getElementById("readLang");
+  readLang.value = store("readLang") || "exam";
+  readLang.onchange = function () { store("readLang", readLang.value); toast("Saved. Read-aloud: " + readLang.options[readLang.selectedIndex].text + "."); };
   drawKey();
 </script>
 </body>

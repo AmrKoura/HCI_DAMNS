@@ -34,4 +34,14 @@ function store(key, value) {
   } catch (e) { return null; }
 }
 
+/* Talk Back answers Lina sent from Mistake Replay. No backend, so they live in localStorage
+   and the student, teacher and parent chats all read them from here. Pass a note to add one. */
+function talkbackNotes(add) {
+  var list;
+  try { list = JSON.parse(store("talkback") || "[]"); } catch (e) { list = []; }
+  if (!Array.isArray(list)) list = [];
+  if (add) { list.push(add); store("talkback", JSON.stringify(list)); }
+  return list;
+}
+
 document.addEventListener("DOMContentLoaded", initPage);

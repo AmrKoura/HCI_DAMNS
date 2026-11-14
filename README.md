@@ -33,7 +33,7 @@ You need internet for the icons (Lucide) and fonts (Google Fonts). The prototype
 
 | View | Best on | Pages |
 |---|---|---|
-| Student | Tablet (works on laptop) | Subjects, subject home with Math Garden, submit exam photos, waiting screen, results, one result with two stars and a wish, Mistake Replay with mini lesson and "Try one like it", messages with voice notes |
+| Student | Tablet (works on laptop) | Subjects, subject home with Math Garden, submit exam photos, waiting screen, results, one result with two stars and a wish, Mistake Replay with mini lesson and "Try one like it", messages with voice notes, Talk Back (feedback read aloud in English or German, and a voice answer to Frau Weber from Mistake Replay) |
 | Teacher | Laptop | Dashboard, Papers, test page with answer key, class list, Skill Timeline (one student's skills across all tests, with the flag history), correcting one paper or a whole batch in 4 steps (check text, confirm grade, red flags, release), new assignment, messages, settings with grading system |
 | Parent | Laptop and phone | Overview, tonight's activity (English and Arabic), calendar, messages (own chats and read-only child chats), settings with privacy and consent |
 
@@ -43,6 +43,7 @@ These match our HTDs:
 
 - **Student, submit exam photos:** Math > Submit > add pages > retake the blurry page > Send to my teacher
 - **Student, check a result:** Math > You have 5 new results! > Math Test 3 > See my mistakes
+- **Student, listen to feedback and answer by voice:** Math > Math Test 3 > Listen to all > See my mistakes > Tell Frau Weber how you'd fix it
 - **Teacher, grade a class set:** Papers > Math Test 3 > 3B > Correct all 22 > Step 1 Check text > Step 2 Confirm grade
 - **Teacher, confirm or dismiss a red flag:** in the same flow, Step 3 Red flags
 - **Teacher, return the results:** in the same flow, Step 4 Release > Release all 22 papers
@@ -64,6 +65,7 @@ css/
 js/
   app.js            shared helpers (icons, toast messages, saving small settings)
   student.js        student top bar, plant drawings, notifications
+  talkback.js       Talk Back: read-aloud and the voice recording sheet (student chat, result, Mistake Replay)
   teacher.js        teacher top bar and answer key pop-up
   correct.js        the 4-step correcting flow
   parent.js         parent top bar, child switcher, language menu

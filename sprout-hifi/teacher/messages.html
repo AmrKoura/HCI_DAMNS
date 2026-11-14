@@ -36,6 +36,9 @@
   .m.me { align-self: flex-end; background: var(--indigo); color: #fff; border-color: var(--indigo); border-radius: 16px 4px 16px 16px; }
   .m .t { display: block; font-size: 11.5px; opacity: .65; text-align: right; margin-top: 3px; }
   .m.sticker { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+  .m .about { display: block; margin-bottom: 6px; padding: 4px 8px; border-left: 3px solid var(--apricot); border-radius: 6px; background: rgba(43, 37, 96, .06); font-size: 12.5px; }
+  .m .play { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+  .m .play .p { width: 32px; height: 32px; border-radius: 50%; background: var(--indigo-50); color: var(--indigo); display: grid; place-items: center; }
   .composer { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
   .composer .input { min-height: 46px; border-radius: 999px; }
   .tools { display: flex; gap: 6px; }
@@ -81,7 +84,7 @@
 <script>
   var data = {
     students: [
-      { n: "Lina A.", sub: "Student · 3B · Math", un: true, msgs: [["me", "sticker", "Super effort!", "9:02"], ["me", "text", "You worked really hard on Test 3. I am proud of you!", "9:03"], ["them", "text", "Thank you Frau Weber!", "9:10"]] },
+      { n: "Lina A.", sub: "Student · 3B · Math", un: true, msgs: [["me", "sticker", "Super effort!", "9:02"], ["me", "text", "You worked really hard on Test 3. I am proud of you!", "9:03"], ["them", "text", "Thank you Frau Weber!", "9:10"]].concat(talkbackNotes().map(function (n) { return ["them", n.kind, n.text, n.time, n.about]; })) },
       { n: "Karim F.", sub: "Student · 3B · Math", msgs: [["me", "text", "Please send your Test 3 photos when you can.", "Yesterday"]] },
       { n: "Ben L.", sub: "Student · 4A · Science", un: true, msgs: [["them", "text", "Can I do the plant quiz again?", "Thu"]] }
     ],
@@ -99,7 +102,7 @@
     document.getElementById("convs").innerHTML = L.map(function (c, i) {
       if (q && c.n.toLowerCase().indexOf(q) < 0) return "";
       var last = c.msgs[c.msgs.length - 1];
-      return '<button class="conv' + (i === sel ? " on" : "") + '" data-i="' + i + '"><span class="av' + (c.p ? " p" : "") + '">' + ini(c.n) + '</span><span class="grow"><b>' + c.n + "</b><small>" + (last[0] === "me" ? "You: " : "") + esc(last[2]) + "</small></span>" + (c.un ? '<span class="unread" aria-label="Unread"></span>' : "") + "</button>";
+      return '<button class="conv' + (i === sel ? " on" : "") + '" data-i="' + i + '"><span class="av' + (c.p ? " p" : "") + '">' + ini(c.n) + '</span><span class="grow"><b>' + c.n + "</b><small>" + (last[0] === "me" ? "You: " : "") + (last[1] === "voice" ? "Voice note " : "") + esc(last[2]) + "</small></span>" + (c.un ? '<span class="unread" aria-label="Unread"></span>' : "") + "</button>";
     }).join("");
     var c = L[sel];
     document.getElementById("thAv").textContent = ini(c.n);
@@ -107,6 +110,9 @@
     document.getElementById("thName").textContent = c.n;
     document.getElementById("thSub").textContent = c.sub;
     document.getElementById("msgs").innerHTML = c.msgs.map(function (m) {
+      var about = m[4] ? '<span class="about">' + esc(m[4]) + "</span>" : "";
+      if (m[0] === "them" && m[1] === "voice") return '<div class="m">' + about + '<button class="play" data-play="' + esc(m[2]) + '" aria-label="Play Lina\'s voice note, ' + esc(m[2]) + '"><span class="p"><i data-lucide="play" class="i-sm"></i></span>Voice note ' + esc(m[2]) + '</button><span class="t">' + m[3] + "</span></div>";
+      if (m[0] === "them" && about) return '<div class="m">' + about + esc(m[2]) + '<span class="t">' + m[3] + "</span></div>";
       if (m[1] === "sticker") return '<div class="m me sticker"><i data-lucide="star" class="i-sm"></i>Sticker: ' + esc(m[2]) + '<span class="t">' + m[3] + "</span></div>";
       if (m[1] === "voice") return '<div class="m me"><i data-lucide="audio-lines" class="i-sm" style="vertical-align:-3px"></i> Voice note ' + m[2] + '<span class="t">' + m[3] + "</span></div>";
       return '<div class="m' + (m[0] === "me" ? " me" : "") + '">' + esc(m[2]) + '<span class="t">' + m[3] + "</span></div>";
@@ -123,6 +129,9 @@
     sel = +b.dataset.i; data[tab][sel].un = false; document.getElementById("shell").classList.add("open"); render();
   };
   document.getElementById("back").onclick = function () { document.getElementById("shell").classList.remove("open"); };
+  document.getElementById("msgs").onclick = function (e) {
+    var p = e.target.closest("[data-play]"); if (p) toast("Playing Lina's voice note (" + p.dataset.play + ")");
+  };
   document.getElementById("q").oninput = render;
   document.getElementById("composer").onsubmit = function (e) {
     e.preventDefault(); var v = document.getElementById("draft").value.trim(); if (!v) return;

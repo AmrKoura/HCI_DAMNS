@@ -97,7 +97,7 @@
         <h2>Privacy and consent</h2>
         <p>You decide what happens with Lina's work. You can change this any time.</p>
         <div>
-          <div class="row"><div class="grow"><b>Voice answers</b><small>Lina can record short voice answers for her teacher</small></div><label class="sw"><input type="checkbox" checked data-c="Voice answers" aria-label="Voice answers"><span></span></label></div>
+          <div class="row"><div class="grow"><b>Voice answers</b><small>Lina can record short voice answers for her teacher</small></div><label class="sw"><input type="checkbox" checked data-c="Voice answers" id="voiceOk" aria-label="Voice answers"><span></span></label></div>
           <div class="row"><div class="grow"><b>Delete voice recordings after 30 days</b><small>Only the teacher can play them, and they are deleted after 30 days</small></div><label class="sw"><input type="checkbox" checked data-c="Delete voice after 30 days" aria-label="Delete voice recordings after 30 days"><span></span></label></div>
           <div class="row"><div class="grow"><b>Keep exam photos until the end of the school year</b><small>Then they are deleted. Marks stay.</small></div><label class="sw"><input type="checkbox" checked data-c="Keep exam photos" aria-label="Keep exam photos until the end of the school year"><span></span></label></div>
           <div class="row"><div class="grow"><b>Who can see Lina's results</b><small>Lina, her teachers and you</small></div>
@@ -137,6 +137,10 @@
     return '<label' + (l[0] === "ar" ? ' style="font-family:var(--font-ar)"' : "") + '><input type="radio" name="lang" value="' + l[0] + '"' + (l[0] === P_LANG ? " checked" : "") + ">" + l[1] + "</label>";
   }).join("");
   document.getElementById("langs").onchange = function (e) { store("lang", e.target.value); P_LANG = e.target.value; toast("Language saved. Tonight's activity now shows in " + e.target.parentNode.textContent + "."); };
+  /* Voice answers consent is read by the student's Mistake Replay (Talk Back) */
+  var voiceOk = document.getElementById("voiceOk");
+  voiceOk.checked = store("consent.voice") !== "off";
+  voiceOk.addEventListener("change", function () { store("consent.voice", voiceOk.checked ? "on" : "off"); });
   document.querySelectorAll("[data-c]").forEach(function (c) {
     c.onchange = function () {
       var row = document.createElement("tr");

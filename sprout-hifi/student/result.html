@@ -20,7 +20,10 @@
   .pages { display: flex; gap: 12px; padding: 16px 18px; align-items: center; }
   .pg { width: 64px; height: 84px; border-radius: 8px; border: 1px solid var(--line); background: #fff; padding: 9px 7px; display: flex; flex-direction: column; gap: 6px; }
   .pg i { display: block; height: 4px; border-radius: 2px; background: #D9D6E8; }
-  .fb { display: flex; align-items: flex-start; gap: 16px; padding: 20px 22px; border-radius: var(--r-xl); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
+  .fb { display: flex; align-items: flex-start; gap: 16px; padding: 20px 22px; border-radius: var(--r-xl); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); transition: box-shadow .2s ease; }
+  .fb > p, .fb > div { flex: 1; min-width: 0; }
+  .fb.reading { box-shadow: 0 0 0 4px rgba(255, 159, 110, .45), var(--shadow-1); }
+  .fb.reading .say { border-color: var(--apricot); background: var(--apricot-100); }
   .fb .f-ico { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; flex-shrink: 0; background: var(--apricot-100); color: #B3541F; }
   .fb .f-ico .i { width: 28px; height: 28px; fill: currentColor; }
   .fb.wish { background: var(--indigo-50); border-color: transparent; }
@@ -28,13 +31,15 @@
   .fb.wish .f-ico .i { fill: none; }
   .fb p { font-size: 21px; line-height: 1.35; }
   .fb .tag { margin-top: 10px; }
-  .from { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 16px; }
+  .from { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 16px; flex-wrap: wrap; }
+  .from h2 { flex: 1; min-width: 200px; }
+  .listen { min-height: 48px; }
   .from .avatar { width: 38px; height: 38px; font-size: 15px; background: var(--indigo-50); color: var(--indigo); }
   .actions { display: flex; justify-content: flex-end; margin-top: 6px; }
   @media (max-width: 860px) { .r-grid { grid-template-columns: 1fr; } .r-grid .feedback { order: -1; } }
 </style>
 </head>
-<body class="kid">
+<body class="kid" data-subject="math">
 <main class="k-wrap">
   <header class="k-top">
     <a class="k-icon" href="results.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
@@ -57,16 +62,20 @@
     </div>
 
     <section class="col feedback" aria-labelledby="fbTitle">
-      <div class="from"><span class="avatar" aria-hidden="true">FW</span><h2 id="fbTitle" style="font-size:20px">Two stars and a wish from Frau Weber</h2></div>
-      <div class="fb"><span class="f-ico"><i data-lucide="star"></i></span><p>You added the tens perfectly!</p></div>
-      <div class="fb"><span class="f-ico"><i data-lucide="star"></i></span><p>Your working out is so neat!</p></div>
-      <div class="fb wish">
+      <div class="from"><span class="avatar" aria-hidden="true">FW</span><h2 id="fbTitle" style="font-size:20px">Two stars and a wish from Frau Weber</h2>
+        <button class="btn btn-ghost listen" id="listenAll"><i data-lucide="volume-2" class="i-sm"></i><span>Listen to all</span></button></div>
+      <div class="fb" data-name="star 1"><span class="f-ico"><i data-lucide="star"></i></span><p>You added the tens perfectly!</p>
+        <button class="say" aria-label="Read star 1 aloud"><i data-lucide="volume-2" class="i-sm"></i></button></div>
+      <div class="fb" data-name="star 2"><span class="f-ico"><i data-lucide="star"></i></span><p>Your working out is so neat!</p>
+        <button class="say" aria-label="Read star 2 aloud"><i data-lucide="volume-2" class="i-sm"></i></button></div>
+      <div class="fb wish" data-name="the wish">
         <span class="f-ico"><i data-lucide="wand-sparkles"></i></span>
         <div><p><b>My wish:</b> borrowing from the tens. Let's fix it together!</p>
           <span class="pill pill-apricot tag"><i data-lucide="droplets" class="i-sm"></i>Skill to practise: subtracting with borrowing</span></div>
+        <button class="say" aria-label="Read the wish aloud"><i data-lucide="volume-2" class="i-sm"></i></button>
       </div>
       <div class="actions">
-        <a class="btn btn-primary btn-lg" href="mistakes.html"><i data-lucide="search" class="i-sm"></i>See my mistakes</a>
+        <a class="btn btn-primary btn-lg" href="mistakes.html" id="seeMistakes"><i data-lucide="search" class="i-sm"></i>See my mistakes</a>
       </div>
     </section>
   </div>
@@ -74,5 +83,60 @@
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/student.js"></script>
+<script src="../js/talkback.js"></script>
+<script>
+  /* Read the two stars and the wish aloud, one card at a time. */
+  var cards = [].slice.call(document.querySelectorAll(".fb[data-name]"));
+  var listenAll = document.getElementById("listenAll");
+  var reading = null, all = false, gap = null;
+
+  /* keep ?subject=german when going on to Mistake Replay */
+  document.getElementById("seeMistakes").href += location.search;
+
+  function setIcon(btn, name) { btn.innerHTML = '<i data-lucide="' + name + '" class="i-sm"></i>' + (btn === listenAll ? "<span>" + (name === "square" ? "Stop" : "Listen to all") + "</span>" : ""); }
+  function show() {
+    cards.forEach(function (c) {
+      var on = c === reading, b = c.querySelector(".say");
+      c.classList.toggle("reading", on);
+      setIcon(b, on ? "square" : "volume-2");
+      b.setAttribute("aria-label", (on ? "Stop reading " : "Read ") + c.dataset.name + (on ? "" : " aloud"));
+    });
+    setIcon(listenAll, all ? "square" : "volume-2");
+    listenAll.setAttribute("aria-label", all ? "Stop reading" : "Listen to all");
+    refreshIcons();
+  }
+  function stopAll() { clearTimeout(gap); Talk.stop(); reading = null; all = false; show(); }
+  function read(card) {
+    reading = card; show();
+    var ok = Talk.speak(card.textContent.replace(/\s+/g, " ").trim(), {
+      lang: Talk.lang(),
+      onend: function () {
+        var next = all ? cards[cards.indexOf(card) + 1] : null;
+        reading = null;
+        if (!next) { all = false; show(); return; }
+        show();
+        gap = setTimeout(function () { read(next); }, 700);
+      }
+    });
+    if (!ok) stopAll();
+  }
+
+  if (!Talk.canSpeak) {
+    listenAll.hidden = true;
+    cards.forEach(function (c) { c.querySelector(".say").hidden = true; });
+  } else {
+    listenAll.onclick = function () {
+      if (all) { stopAll(); return; }
+      stopAll(); all = true; read(cards[0]);
+    };
+    cards.forEach(function (c) {
+      c.querySelector(".say").onclick = function () {
+        if (reading === c) { stopAll(); return; }
+        stopAll(); read(c);
+      };
+    });
+  }
+  window.addEventListener("pagehide", stopAll);
+</script>
 </body>
 </html>

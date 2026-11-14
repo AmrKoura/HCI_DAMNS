@@ -41,6 +41,7 @@
   .voice .bars { display: inline-flex; gap: 2px; align-items: center; }
   .voice .bars i { width: 3px; border-radius: 2px; background: currentColor; opacity: .5; display: inline-block; }
   .voice.locked { color: var(--muted); }
+  .m .about { display: block; margin-bottom: 6px; padding: 4px 8px; border-left: 3px solid var(--apricot); border-radius: 6px; background: rgba(43, 37, 96, .06); font-size: 12.5px; }
   .composer { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
   .composer .input { min-height: 46px; border-radius: 999px; }
   .ro { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--surface-2); }
@@ -101,7 +102,7 @@
         ["t", "sticker", "Super effort!", "9:02"],
         ["t", "text", "You worked really hard on Test 3. I am proud of you!", "9:03"],
         ["k", "text", "Thank you Frau Weber!", "9:10"],
-        ["k", "voice", "0:12", "9:11"]] },
+        ["k", "voice", "0:12", "9:11"]].concat(talkbackNotes().map(function (n) { return ["k", n.kind, n.text, n.time, null, n.about]; })) },
       { n: "Lina and Herr Klein", sub: "German", t: "Herr Klein", msgs: [
         ["t", "text", "Great dictation, Lina. Only two small slips.", "Tue"],
         ["k", "text", "Yay!", "Tue"]] }
@@ -134,9 +135,10 @@
       var body;
       if (m[1] === "sticker") body = '<span style="display:inline-flex;gap:8px;align-items:center;font-weight:700"><i data-lucide="star" class="i-sm"></i>Sticker: ' + esc(m[2]) + "</span>";
       else if (m[1] === "voice") body = ro && m[0] === "k"
-        ? '<span class="voice locked"><i data-lucide="lock" class="i-sm"></i>' + bars() + m[2] + '</span><span style="display:block;font-size:12.5px;margin-top:4px;opacity:.8">Only the teacher can play Lina\'s voice</span>'
+        ? '<span class="voice locked"><i data-lucide="lock" class="i-sm"></i>Voice note · only the teacher can play this</span>'
         : '<span class="voice"><i data-lucide="play" class="i-sm"></i>' + bars() + m[2] + "</span>";
       else body = esc(m[2]) + (m[4] ? (m.open ? '<span class="tr" dir="rtl" lang="ar">' + m[4] + "</span>" : '<br><button class="trb" data-tr="' + i + '"><i data-lucide="languages" class="i-sm"></i>Translate to Arabic</button>') : "");
+      if (m[5]) body = '<span class="about">' + esc(m[5]) + "</span>" + body;
       return '<div class="m' + (me ? " me" : "") + '"' + (m[0] === "k" ? ' style="background:var(--apricot-100);color:var(--text);border-color:var(--apricot-100)"' : "") + ">" + who + body + '<span class="t">' + m[3] + "</span></div>";
     }).join("");
 

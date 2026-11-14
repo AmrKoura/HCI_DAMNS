@@ -49,6 +49,15 @@
   .ex.right h3 { color: var(--mint-700); }
   .ex.right .steps { display: flex; flex-direction: column; gap: 4px; font-size: 20px; }
 
+  /* talk back */
+  .talk { display: flex; flex-direction: column; gap: 10px; }
+  .talk .chip { align-self: flex-start; font-size: 14px; padding: 5px 12px; }
+  .talk-btn { min-height: 56px; white-space: normal; text-align: left; line-height: 1.25; }
+  .talk-off { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border-radius: var(--r-lg); background: var(--indigo-50); }
+  .talk-off p { display: flex; gap: 10px; align-items: flex-start; font-size: 18px; }
+  .talk-off .btn { align-self: flex-start; min-height: 48px; }
+  .type-box { width: 100%; min-height: 120px; padding: 14px 16px; resize: vertical; font: 400 18px/1.4 var(--font-kid); }
+
   .lesson { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
   .speaking { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
   .speaking.on { color: var(--indigo); font-weight: 600; }
@@ -86,7 +95,7 @@
   @media (max-width: 860px) { .m-grid { grid-template-columns: 1fr; } .paper { min-height: 330px; } .sum { font-size: 52px; } .placeval { font-size: 38px; } }
 </style>
 </head>
-<body class="kid">
+<body class="kid" data-subject="math">
 <main class="k-wrap">
   <header class="k-top">
     <a class="k-icon" href="result.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
@@ -106,6 +115,14 @@
       <div id="explain" class="side">
         <div class="ex did"><h3><i data-lucide="pencil" class="i-sm"></i>What you did</h3><span class="big" id="did"></span><span id="why" style="font-size:18px"></span></div>
         <div class="ex right"><h3><i data-lucide="circle-check" class="i-sm"></i>The right way</h3><div class="steps" id="right"></div></div>
+        <div class="talk">
+          <span class="pill pill-mint chip" id="talkChip" hidden><i data-lucide="mic" class="i-sm"></i>You explained it</span>
+          <button class="btn btn-accent btn-lg talk-btn" id="talkBtn"><i data-lucide="mic" class="i-sm"></i><span id="talkLabel">Tell Frau Weber how you'd fix it</span></button>
+          <div class="talk-off" id="talkOff" role="status" hidden>
+            <p><i data-lucide="mic-off" class="i-sm" style="margin-top:4px"></i>Voice answers are turned off. Ask a grown-up to turn them on.</p>
+            <button class="btn btn-ghost" id="typeIt"><i data-lucide="keyboard" class="i-sm"></i>Type it instead</button>
+          </div>
+        </div>
         <button class="btn btn-ghost btn-lg" id="watch"><i data-lucide="circle-play" class="i-sm"></i>Watch it</button>
       </div>
 
@@ -167,11 +184,26 @@
   </div>
 </div>
 
+<div class="overlay" id="typeOverlay" hidden>
+  <form class="dialog" id="typeForm" role="dialog" aria-modal="true" aria-labelledby="typeTitle" style="width:min(520px,100%)">
+    <h2 id="typeTitle" style="font-size:24px">Tell Frau Weber how you'd fix it</h2>
+    <label for="typeText" class="muted" style="font-size:16px">Write what you would do differently. Only Frau Weber will read it.</label>
+    <textarea class="input type-box" id="typeText" autocomplete="off"></textarea>
+    <div style="display:flex;gap:12px">
+      <button type="button" class="btn btn-ghost btn-lg" id="typeCancel" style="flex:1">Cancel</button>
+      <button type="submit" class="btn btn-primary btn-lg" style="flex:1"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button>
+    </div>
+  </form>
+</div>
+
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/talkback.js"></script>
 <script>
+  var EXAM = "Test 3";
   var mistakes = [
     {
+      key: "test3-q3",
       q: "Question 3",
       did: "Tens: 5 − 2 = 3",
       why: "You forgot to borrow.",
@@ -189,6 +221,7 @@
       tryFix: "3 is smaller than 8, so borrow 1 ten.\n13 − 8 = 5, then 3 − 1 = 2, so the answer is 25."
     },
     {
+      key: "test3-q2",
       q: "Question 2",
       did: "7 tens 4 ones = 47",
       why: "The tens and the ones swapped places.",
@@ -222,16 +255,26 @@
     return '<div class="placeval hw">' + s("q", s("tens", "7 tens") + " 4 ones") + " = " + s("ans", "47") + "</div>";
   }
 
-  function speak(text) {
-    try {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = speeds[sp];
-      window.speechSynthesis.speak(u);
-    } catch (e) {}
+  function speak(text) { Talk.speak(text, { rate: speeds[sp], lang: Talk.lang() }); }
+  function stopSpeak() { Talk.stop(); }
+
+  /* keep ?subject=german when going back to the result */
+  document.querySelector(".k-top a").href += location.search;
+
+  /* Talk Back: the child explains to Frau Weber how they would fix this mistake */
+  function explained(m) { return talkbackNotes().some(function (n) { return n.mistake === m.key; }); }
+  function sendAnswer(kind, text) {
+    var m = mistakes[idx], d = new Date();
+    talkbackNotes({
+      id: Date.now(), kind: kind, text: text, mistake: m.key,
+      time: d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2),
+      about: "About Mistake Replay · " + EXAM + ", " + m.q
+    });
+    $("talkOff").hidden = true;
+    toast("Sent to Frau Weber");
+    render();
+    $("talkBtn").focus();
   }
-  function stopSpeak() { try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} }
 
   function render() {
     var m = mistakes[idx];
@@ -244,6 +287,9 @@
     $("did").textContent = m.did;
     $("why").textContent = m.why;
     $("right").innerHTML = m.right.map(function (r) { return "<span>" + r + "</span>"; }).join("");
+    var done = explained(m);
+    $("talkChip").hidden = !done;
+    $("talkLabel").textContent = done ? "Record again" : "Tell Frau Weber how you'd fix it";
     $("stepNo").textContent = "Step " + (step + 1) + " of 4";
     $("caption").textContent = m.captions[step];
     $("progress").style.width = ((step + 1) * 25) + "%";
@@ -275,11 +321,32 @@
   $("fwd").onclick = function () { step = Math.min(3, step + 1); render(); playStep(); };
   $("speed").onclick = function () { sp = (sp + 1) % speeds.length; render(); playStep(); };
 
-  function goTo(i) { playing = false; clearTimeout(timer); stopSpeak(); idx = i; step = 0; $("lesson").hidden = true; $("explain").hidden = false; render(); }
+  function goTo(i) { playing = false; clearTimeout(timer); stopSpeak(); idx = i; step = 0; $("lesson").hidden = true; $("explain").hidden = false; $("talkOff").hidden = true; render(); }
   $("prev").onclick = function () { if (idx > 0) goTo(idx - 1); };
   $("next").onclick = function () {
     if (idx < mistakes.length - 1) goTo(idx + 1);
-    else { toast("Well done! You looked at all your mistakes."); setTimeout(function () { location.href = "result.html"; }, 1200); }
+    else { toast("Well done! You looked at all your mistakes."); setTimeout(function () { location.href = "result.html" + location.search; }, 1200); }
+  };
+
+  $("talkBtn").onclick = function () {
+    playing = false; clearTimeout(timer); stopSpeak(); render();
+    if (!Talk.voiceAllowed()) { $("talkOff").hidden = false; $("typeIt").focus(); return; }
+    Talk.record({
+      title: "Tell Frau Weber how you'd fix it",
+      note: "Say what you would do differently. Only Frau Weber will hear it.",
+      review: true,
+      onSend: function (s, len) { sendAnswer("voice", len); }
+    });
+  };
+  function closeType() { $("typeOverlay").hidden = true; $("typeIt").focus(); }
+  $("typeIt").onclick = function () { $("typeText").value = ""; $("typeOverlay").hidden = false; setTimeout(function () { $("typeText").focus(); }, 50); };
+  $("typeCancel").onclick = closeType;
+  $("typeOverlay").addEventListener("click", function (e) { if (e.target === this) closeType(); });
+  $("typeForm").onsubmit = function (e) {
+    e.preventDefault();
+    var v = $("typeText").value.trim(); if (!v) { $("typeText").focus(); return; }
+    $("typeOverlay").hidden = true;
+    sendAnswer("text", v);
   };
 
   /* Try one like it */
@@ -328,7 +395,10 @@
   $("tryBtn").onclick = openTry;
   $("tryClose").onclick = function () { stopSpeak(); closeTry(); };
   $("tryOverlay").addEventListener("click", function (e) { if (e.target === this) { stopSpeak(); closeTry(); } });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("tryOverlay").hidden) { stopSpeak(); closeTry(); } });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !$("tryOverlay").hidden) { stopSpeak(); closeTry(); }
+    if (e.key === "Escape" && !$("typeOverlay").hidden) closeType();
+  });
 
   render();
 </script>
