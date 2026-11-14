@@ -43,8 +43,9 @@ These match our HTDs:
 
 - **Student, submit exam photos:** Math > Submit > add pages > retake the blurry page > Send to my teacher
 - **Student, check a result:** Math > You have 5 new results! > Math Test 3 > See my mistakes
-- **Teacher, verify OCR text:** Papers > Math Test 3 > 3B > Correct all 22 > Step 1 Check text
+- **Teacher, grade a class set:** Papers > Math Test 3 > 3B > Correct all 22 > Step 1 Check text > Step 2 Confirm grade
 - **Teacher, confirm or dismiss a red flag:** in the same flow, Step 3 Red flags
+- **Teacher, return the results:** in the same flow, Step 4 Release > Release all 22 papers
 - **Teacher, new assignment:** Dashboard > New assignment > Publish to students
 - **Parent, tonight's activity:** Overview > Open activity > We did it!
 - **Parent, message a teacher:** Messages > My chats > Frau Weber (try "Translate to Arabic")
