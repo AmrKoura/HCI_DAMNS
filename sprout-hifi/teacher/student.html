@@ -62,6 +62,7 @@
   .trend { display: flex; align-items: center; gap: 10px; }
   .trend .tw { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; white-space: nowrap; }
   .tw.t-improving { color: var(--mint-700); }
+  .tw.t-recover { color: var(--mint-700); }
   .tw.t-steady { color: var(--indigo-700); }
   .tw.t-help { color: var(--flag); }
   .tw.t-none { color: var(--muted); }
@@ -263,8 +264,10 @@ document.addEventListener("DOMContentLoaded", function () {
     return '<th scope="col"' + (t.up ? ' class="up-col"' : "") + ">" + t.name + " · " + t.date + (t.up ? '<small><span class="pill" style="font-size:11.5px;padding:1px 8px">Upcoming</span></small>' : "<small>" + t.title + "</small>") + "</th>";
   }).join("") + '<th scope="col">Trend</th></tr>';
 
-  var TW = { improving: ["Improving", "trending-up", "t-improving"], steady: ["Steady", "arrow-right", "t-steady"], help: ["Needs help", "trending-down", "t-help"], none: ["Not tested yet", "circle-dashed", "t-none"] };
-  var PLANT = { improving: "grow", steady: "bloom", help: "droop", none: "sprout" };
+  var TW = { improving: ["Improving", "trending-up", "t-improving"], steady: ["Steady", "arrow-right", "t-steady"], help: ["Needs help", "trending-down", "t-help"], none: ["Not tested yet", "circle-dashed", "t-none"], recover: ["Perking up after practice", "sprout", "t-recover"] };
+  var PLANT = { improving: "grow", steady: "bloom", help: "droop", none: "sprout", recover: "recover" };
+  /* same key as Lina's Math Garden: practice ("Try one like it", or Tonight's activity done at home) perks up the borrowing plant */
+  var PERKED = S.garden && store("garden.subtracting") === "recover";
   $("tbody").innerHTML = D.skills.map(function (sk) {
     var isOpen = OPEN && OPEN.skill === sk.k;
     var tds = D.tests.map(function (t, ti) {
@@ -275,8 +278,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var label = sk.name + ", " + t.name + ": " + (c ? score(c).m + " of " + score(c).of + ", " + r.word : "not tested");
       return '<td><button class="chip-s ' + r.cls + '" data-sk="' + sk.k + '" data-t="' + ti + '" aria-pressed="false" aria-label="' + esc(label) + '">' + txt + "</button></td>";
     }).join("");
-    var tr = S.trend[sk.k], w = TW[tr];
-    var plantStage = S.garden ? S.garden[sk.k] : PLANT[tr];
+    var perk = PERKED && sk.k === "bor";
+    var tr = perk ? "recover" : S.trend[sk.k], w = TW[tr];
+    var plantStage = perk ? "recover" : (S.garden ? S.garden[sk.k] : PLANT[tr]);
     var plant = plantStage ? '<span class="mini" title="' + S.first + "'s plant: " + D.plantWords[plantStage] + '">' + plantSVG(plantStage) + "</span>" : '<span class="nog">Not in garden</span>';
     return '<tr' + (isOpen ? ' class="hl"' : "") + '><th scope="row"><span class="sk">' + sk.name + (isOpen ? '<span class="fmark"><i data-lucide="flag" class="i-sm"></i>Flag<span style="position:absolute;left:-9999px"> open</span></span>' : "") + "</span></th>" + tds +
       '<td><span class="trend"><span class="tw ' + w[2] + '"><i data-lucide="' + w[1] + '" class="i-sm"></i>' + w[0] + "</span>" + plant + "</span></td></tr>";
@@ -370,7 +374,7 @@ window.TIMELINE = {
     { k: "wp", name: "Word problems", fix: "word problems are fixed" },
     { k: "sh", name: "Shapes", fix: "shapes are secure" }
   ],
-  plantWords: { bloom: "growing tall", droop: "needs a little water", grow: "getting bigger", sprout: "just planted" },
+  plantWords: { bloom: "growing tall", droop: "needs a little water", grow: "getting bigger", sprout: "just planted", recover: "perking up" },
   students: {
     lina: {
       name: "Lina A.", first: "Lina", poss: "her",

@@ -107,7 +107,11 @@
       speechSynthesis.speak(u); speaking = true; btn.querySelector("span").textContent = AR && a.ar ? "إيقاف" : "Stop";
     };
     var did = document.getElementById("did");
-    if (did) did.onclick = function () { a.finished = true; toast("Great! Frau Weber will see that you practised tonight."); render(); };
+    if (did) did.onclick = function () {
+      a.finished = true;
+      /* practising borrowing at home perks up Lina's drooping Subtracting plant (student/home.html) */
+      if (a.id === "beans") store("garden.subtracting", "recover");
+      toast("Great! Frau Weber will see that you practised tonight."); render(); };
     refreshIcons();
   }
   function render() { renderList(); renderDetail(); }

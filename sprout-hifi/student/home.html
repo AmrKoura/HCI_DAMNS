@@ -22,64 +22,71 @@
   .due.soon { color: #8A3E14; font-weight: 600; }
   .sent { display: inline-flex; align-items: center; gap: 6px; color: var(--mint-700); font-weight: 600; font-size: 15px; }
   .right { display: flex; flex-direction: column; gap: 24px; }
+  .k-row .btn { flex-shrink: 0; }
 </style>
 </head>
 <body class="kid">
 <main class="k-wrap">
   <header class="k-top">
-    <a class="k-icon" href="subjects.html" aria-label="Back to subjects"><i data-lucide="arrow-left"></i></a>
+    <a class="k-icon" href="subjects.html" aria-label="Back to subjects" data-i18n-label="nav.backSubjects"><i data-lucide="arrow-left"></i></a>
     <div class="grow"></div>
     <div class="notif-wrap">
-      <button class="k-icon" id="bell" aria-label="Notifications" aria-expanded="false"><i data-lucide="bell"></i><span class="dot">3</span></button>
+      <button class="k-icon" id="bell" aria-label="Notifications" data-i18n-label="nav.notif" aria-expanded="false"><i data-lucide="bell"></i><span class="dot">3</span></button>
       <div class="notif" id="notifPanel" hidden>
-        <h3>From Frau Weber</h3>
-        <a href="results.html"><span class="n-ico mint"><i data-lucide="check-check" class="i-sm"></i></span><span><p>I checked your <b>Math Test 3</b>.</p><small>Today, 9:00</small></span></a>
-        <a href="mistakes.html"><span class="n-ico apr"><i data-lucide="sprout" class="i-sm"></i></span><span><p>New practice for you: <b>borrowing from the tens</b>.</p><small>Today, 9:01</small></span></a>
-        <a href="messages.html"><span class="n-ico"><i data-lucide="message-circle" class="i-sm"></i></span><span><p>You got a sticker: <b>Super effort!</b></p><small>Today, 9:02</small></span></a>
+        <h3 data-i18n="notif.weber">From Frau Weber</h3>
+        <a href="results.html"><span class="n-ico mint"><i data-lucide="check-check" class="i-sm"></i></span><span><p data-i18n-html="notif.checkedMe">I checked your <b>Math Test 3</b>.</p><small data-i18n="time.900">Today, 9:00</small></span></a>
+        <a href="mistakes.html"><span class="n-ico apr"><i data-lucide="sprout" class="i-sm"></i></span><span><p data-i18n-html="notif.practice">New practice for you: <b>borrowing from the tens</b>.</p><small data-i18n="time.901">Today, 9:01</small></span></a>
+        <a href="messages.html"><span class="n-ico"><i data-lucide="message-circle" class="i-sm"></i></span><span><p data-i18n-html="notif.stickerMe">You got a sticker: <b>Super effort!</b></p><small data-i18n="time.902">Today, 9:02</small></span></a>
       </div>
     </div>
-    <a class="k-icon" href="messages.html" aria-label="Messages, 1 new"><i data-lucide="message-circle"></i><span class="dot">1</span></a>
-    <a class="k-icon" href="../index.html" aria-label="Log out"><i data-lucide="log-out"></i></a>
+    <a class="k-icon" href="messages.html" aria-label="Messages, 1 new" data-i18n-label="nav.messages1"><i data-lucide="message-circle"></i><span class="dot">1</span></a>
+    <a class="k-icon" href="../index.html" aria-label="Log out" data-i18n-label="nav.logout"><i data-lucide="log-out"></i></a>
   </header>
 
   <div class="k-grid-2">
     <section class="k-card k-pad" aria-labelledby="gardenTitle">
       <div class="k-title">
-        <h2 id="gardenTitle">My Math Garden</h2>
-        <span class="pill pill-mint"><i data-lucide="sprout" class="i-sm"></i>4 skills</span>
+        <h2 id="gardenTitle" data-i18n="garden.title">My Math Garden</h2>
+        <span class="pill pill-mint"><i data-lucide="sprout" class="i-sm"></i><span data-i18n="garden.count">4 skills</span></span>
       </div>
+      <p class="legend" role="note" aria-label="What the plants mean" data-i18n-label="legend.label">
+        <span><span data-plant="bloom"></span><span data-i18n="legend.grow">growing</span></span><span aria-hidden="true">·</span>
+        <span><span data-plant="droop"></span><span data-i18n="legend.water">needs water</span></span><span aria-hidden="true">·</span>
+        <span><span data-plant="recover"></span><span data-i18n="legend.recover">perking up</span></span>
+      </p>
       <div class="garden-grid">
-        <div class="plant"><span data-plant="bloom"></span><b>Adding</b><small>Growing tall!</small></div>
-        <div class="plant thirsty"><span data-plant="droop"></span><b>Subtracting</b><small>Needs a little water</small></div>
-        <div class="plant"><span data-plant="grow"></span><b>Place value</b><small>Getting bigger</small></div>
-        <div class="plant"><span data-plant="sprout"></span><b>Shapes</b><small>Just planted</small></div>
+        <div class="plant"><span data-plant="bloom"></span><b data-i18n="skill.adding">Adding</b><small data-i18n="plant.bloom">Growing tall!</small></div>
+        <div class="plant thirsty" id="subPlant"><span data-plant="droop"></span><b data-i18n="skill.subtracting">Subtracting</b><small data-i18n="plant.droop">Needs a little water</small></div>
+        <div class="plant"><span data-plant="grow"></span><b data-i18n="skill.placeValue">Place value</b><small data-i18n="plant.grow">Getting bigger</small></div>
+        <div class="plant"><span data-plant="sprout"></span><b data-i18n="skill.shapes">Shapes</b><small data-i18n="plant.sprout">Just planted</small></div>
       </div>
+      <button class="reset-demo" id="resetDemo" type="button"><i data-lucide="rotate-ccw" class="i-sm"></i><span data-i18n="garden.reset">Reset demo</span></button>
     </section>
 
     <div class="right">
       <a class="results-card" href="results.html">
         <span class="star"><i data-lucide="star" class="i-lg"></i></span>
-        <span class="grow"><b>You have 5 new results!</b><small>See all your Math results</small></span>
+        <span class="grow"><b data-i18n="home.results">You have 5 new results!</b><small data-i18n="home.resultsSub">See all your Math results</small></span>
         <i data-lucide="chevron-right" class="i-lg"></i>
       </a>
 
       <section class="k-card k-pad" aria-labelledby="examsTitle">
-        <div class="k-title"><h2 id="examsTitle">My exams to send</h2></div>
+        <div class="k-title"><h2 id="examsTitle" data-i18n="home.exams">My exams to send</h2></div>
         <div class="k-row">
-          <div class="grow"><b>Homework sheet 6</b><span class="due soon"><i data-lucide="clock" class="i-sm"></i>Due Mon 12 Oct</span></div>
-          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+          <div class="grow"><b data-i18n="test.hw6">Homework sheet 6</b><span class="due soon"><i data-lucide="clock" class="i-sm"></i><span data-i18n="home.due12">Due Mon 12 Oct</span></span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i><span data-i18n="home.submit">Submit</span></a>
         </div>
         <div class="k-row">
-          <div class="grow"><b>Math Test 4 · Shapes</b><span class="due"><i data-lucide="calendar" class="i-sm"></i>Due Thu 15 Oct</span></div>
-          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+          <div class="grow"><b data-i18n="test.t4">Math Test 4 · Shapes</b><span class="due"><i data-lucide="calendar" class="i-sm"></i><span data-i18n="home.due15">Due Thu 15 Oct</span></span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i><span data-i18n="home.submit">Submit</span></a>
         </div>
         <div class="k-row">
-          <div class="grow"><b>Math Test 5 · Clock</b><span class="due"><i data-lucide="calendar" class="i-sm"></i>Due Thu 29 Oct</span></div>
-          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i>Submit</a>
+          <div class="grow"><b data-i18n="test.t5">Math Test 5 · Clock</b><span class="due"><i data-lucide="calendar" class="i-sm"></i><span data-i18n="home.due29">Due Thu 29 Oct</span></span></div>
+          <a class="btn btn-accent" href="submit.html"><i data-lucide="camera" class="i-sm"></i><span data-i18n="home.submit">Submit</span></a>
         </div>
         <div class="k-row">
-          <div class="grow"><b class="muted">Math Test 3 · Subtraction</b><small>Your teacher is checking it</small></div>
-          <span class="sent"><i data-lucide="circle-check" class="i-sm"></i>Sent</span>
+          <div class="grow"><b class="muted" data-i18n="test.t3">Math Test 3 · Subtraction</b><small data-i18n="home.checking">Your teacher is checking it</small></div>
+          <span class="sent"><i data-lucide="circle-check" class="i-sm"></i><span data-i18n="home.sent">Sent</span></span>
         </div>
       </section>
     </div>
@@ -88,5 +95,28 @@
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/student.js"></script>
+<script>
+  /* Subtracting plant. "garden.subtracting" is set to "recover" by practice ("Try one like it" in Mistake Replay,
+     or "We did it!" on the parent's Tonight's activity). Practice brings a drooping plant back up; only exams make it grow. */
+  (function () {
+    var card = document.getElementById("subPlant");
+    var state = store("garden.subtracting") === "recover" ? "recover" : "droop";
+    if (state === "recover") {
+      card.className = "plant perky";
+      card.querySelector("[data-plant]").setAttribute("data-plant", "recover");
+      card.querySelector("small").setAttribute("data-i18n", "plant.recover");
+      applyI18n(card);
+      /* grow in once, the first time Lina sees the change */
+      if (store("garden.subtracting.seen") !== "recover") card.classList.add("grow-in");
+    }
+    store("garden.subtracting.seen", state);
+    document.getElementById("resetDemo").onclick = function () {
+      store("garden.subtracting", "droop");
+      store("garden.subtracting.seen", "droop");
+      toast(i18n("garden.resetDone"));
+      setTimeout(function () { location.reload(); }, 900);
+    };
+  })();
+</script>
 </body>
 </html>

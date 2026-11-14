@@ -67,8 +67,8 @@
 <body class="kid">
 <div class="chat-page">
   <header class="chat-top">
-    <a class="k-icon" href="home.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
-    <div class="who"><span class="avatar" aria-hidden="true">FW</span><span><b>Frau Weber</b><small>Math teacher · tap a message to answer it</small></span></div>
+    <a class="k-icon" href="home.html" aria-label="Back" data-i18n-label="nav.back"><i data-lucide="arrow-left"></i></a>
+    <div class="who"><span class="avatar" aria-hidden="true">FW</span><span><b>Frau Weber</b><small data-i18n="chat.role">Math teacher · tap a message to answer it</small></span></div>
   </header>
 
   <div class="thread" id="thread" aria-live="polite"></div>
@@ -76,19 +76,20 @@
   <div class="replybar" id="replyBar" hidden>
     <i data-lucide="reply" class="i-sm" style="color:var(--apricot-600)"></i>
     <div class="q"><b id="replyWho"></b><span id="replyText"></span></div>
-    <button class="icon-btn" id="cancelReply" aria-label="Cancel reply"><i data-lucide="x" class="i-sm"></i></button>
+    <button class="icon-btn" id="cancelReply" aria-label="Cancel reply" data-i18n-label="chat.cancelReply"><i data-lucide="x" class="i-sm"></i></button>
   </div>
 
   <form class="composer" id="composer">
-    <label for="draft" style="position:absolute;left:-9999px">Message</label>
-    <input class="input" id="draft" placeholder="Write a message..." autocomplete="off">
-    <button type="button" class="round mic" id="micBtn" aria-label="Record a voice note"><i data-lucide="mic" class="i-lg"></i></button>
-    <button type="submit" class="round" id="sendBtn" aria-label="Send" hidden><i data-lucide="send-horizontal" class="i-lg"></i></button>
+    <label for="draft" style="position:absolute;left:-9999px" data-i18n="chat.message">Message</label>
+    <input class="input" id="draft" placeholder="Write a message..." data-i18n-ph="chat.write" autocomplete="off">
+    <button type="button" class="round mic" id="micBtn" aria-label="Record a voice note" data-i18n-label="chat.mic"><i data-lucide="mic" class="i-lg"></i></button>
+    <button type="submit" class="round" id="sendBtn" aria-label="Send" data-i18n-label="chat.send" hidden><i data-lucide="send-horizontal" class="i-lg"></i></button>
   </form>
 </div>
 
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
 <script src="../js/talkback.js"></script>
 <script>
   var msgs = [
@@ -104,8 +105,8 @@
   function find(id) { return msgs.filter(function (m) { return m.id === id; })[0]; }
   function short(m) {
     if (!m) return "";
-    if (m.kind === "voice") return "Voice note " + m.text;
-    if (m.kind === "sticker") return "Sticker: " + m.text;
+    if (m.kind === "voice") return i18n("chat.voice", { t: m.text });
+    if (m.kind === "sticker") return i18n("chat.sticker", { t: m.text });
     return m.text.length > 60 ? m.text.slice(0, 60) + "..." : m.text;
   }
   function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -113,7 +114,7 @@
 
   function render() {
     var t = $("thread");
-    t.innerHTML = '<span class="day">Today</span>' + msgs.map(function (m) {
+    t.innerHTML = '<span class="day">' + i18n("chat.today") + '</span>' + msgs.map(function (m) {
       var inner = "";
       if (m.quote) inner += '<span class="quote">' + esc(short(find(m.quote))) + "</span>";
       if (m.about) inner += '<span class="quote">' + esc(m.about) + "</span>";
@@ -122,13 +123,13 @@
       if (m.kind === "voice") inner += '<span class="voice"><span class="p"><i data-lucide="play" class="i-sm"></i></span><span class="wave">' +
         bars.map(function (h) { return '<i style="height:' + h + 'px"></i>'; }).join("") + "</span><span>" + m.text + "</span></span>";
       inner += '<span class="time">' + m.time + "</span>";
-      var say = m.kind === "text" ? '<button class="say" data-say="' + m.id + '" aria-label="Read this message out loud"><i data-lucide="volume-2" class="i-sm"></i></button>' : "";
-      return '<div class="msg' + (m.me ? " me" : "") + '"><button class="bubble' + (m.id === replyId ? " sel" : "") + '" data-id="' + m.id + '" aria-label="Reply to this message">' + inner + "</button>" + say + "</div>";
+      var say = m.kind === "text" ? '<button class="say" data-say="' + m.id + '" aria-label="' + i18n("chat.readAloud") + '"><i data-lucide="volume-2" class="i-sm"></i></button>' : "";
+      return '<div class="msg' + (m.me ? " me" : "") + '"><button class="bubble' + (m.id === replyId ? " sel" : "") + '" data-id="' + m.id + '" aria-label="' + i18n("chat.replyTo") + '">' + inner + "</button>" + say + "</div>";
     }).join("");
     t.scrollTop = t.scrollHeight;
     var r = find(replyId);
     $("replyBar").hidden = !r;
-    if (r) { $("replyWho").textContent = "Answering " + (r.me ? "yourself" : "Frau Weber"); $("replyText").textContent = short(r); }
+    if (r) { $("replyWho").textContent = i18n(r.me ? "chat.answerSelf" : "chat.answerWeber"); $("replyText").textContent = short(r); }
     var has = $("draft").value.trim().length > 0;
     $("micBtn").hidden = has; $("sendBtn").hidden = !has;
     refreshIcons();
@@ -159,10 +160,12 @@
   $("micBtn").onclick = function () {
     var r = find(replyId);
     Talk.record({
-      reply: r ? "Answering: " + short(r) : "",
-      onSend: function (s, len) { add("voice", len); toast("Voice note sent"); }
+      reply: r ? i18n("chat.answering", { m: short(r) }) : "",
+      onSend: function (s, len) { add("voice", len); toast(i18n("chat.voiceSent")); }
     });
   };
+
+  document.addEventListener("studentlang", render);
 
   render();
 </script>

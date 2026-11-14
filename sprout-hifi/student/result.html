@@ -42,40 +42,40 @@
 <body class="kid" data-subject="math">
 <main class="k-wrap">
   <header class="k-top">
-    <a class="k-icon" href="results.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
-    <div class="grow"><h1>Math Test 3 · Subtraction</h1><p class="muted">Checked on 7 October</p></div>
+    <a class="k-icon" href="results.html" aria-label="Back" data-i18n-label="nav.back"><i data-lucide="arrow-left"></i></a>
+    <div class="grow"><h1 data-i18n="test.t3">Math Test 3 · Subtraction</h1><p class="muted" data-i18n="result.checked">Checked on 7 October</p></div>
   </header>
 
   <div class="r-grid">
     <div class="col">
-      <div class="grew"><span data-plant="bloom"></span><span><b>Your Adding plant grew!</b><br><span class="muted" style="font-size:15px">You added the tens right every time.</span></span></div>
+      <div class="grew"><span data-plant="bloom"></span><span><b data-i18n="result.grew">Your Adding plant grew!</b><br><span class="muted" style="font-size:15px" data-i18n="result.grewWhy">You added the tens right every time.</span></span></div>
       <div class="k-card grade">
-        <small>My grade</small>
+        <small data-i18n="result.grade">My grade</small>
         <span class="num">3</span>
-        <span style="font-size:16px">14 of 20 points</span>
+        <span style="font-size:16px" data-i18n="result.points">14 of 20 points</span>
       </div>
       <div class="k-card pages">
         <span class="pg"><i></i><i></i><i></i><i></i><i></i><i></i></span>
         <span class="pg"><i></i><i></i><i></i><i></i><i></i></span>
-        <span style="flex:1"><b style="font-size:16px">My exam</b><br><small class="muted" style="font-size:14px">2 pages</small></span>
+        <span style="flex:1"><b style="font-size:16px" data-i18n="result.exam">My exam</b><br><small class="muted" style="font-size:14px" data-i18n="result.pages">2 pages</small></span>
       </div>
     </div>
 
     <section class="col feedback" aria-labelledby="fbTitle">
-      <div class="from"><span class="avatar" aria-hidden="true">FW</span><h2 id="fbTitle" style="font-size:20px">Two stars and a wish from Frau Weber</h2>
+      <div class="from"><span class="avatar" aria-hidden="true">FW</span><h2 id="fbTitle" style="font-size:20px" data-i18n="result.from">Two stars and a wish from Frau Weber</h2>
         <button class="btn btn-ghost listen" id="listenAll"><i data-lucide="volume-2" class="i-sm"></i><span>Listen to all</span></button></div>
-      <div class="fb" data-name="star 1"><span class="f-ico"><i data-lucide="star"></i></span><p>You added the tens perfectly!</p>
+      <div class="fb" data-name="star 1"><span class="f-ico"><i data-lucide="star"></i></span><p data-fb="star1">You added the tens perfectly!</p>
         <button class="say" aria-label="Read star 1 aloud"><i data-lucide="volume-2" class="i-sm"></i></button></div>
-      <div class="fb" data-name="star 2"><span class="f-ico"><i data-lucide="star"></i></span><p>Your working out is so neat!</p>
+      <div class="fb" data-name="star 2"><span class="f-ico"><i data-lucide="star"></i></span><p data-fb="star2">Your working out is so neat!</p>
         <button class="say" aria-label="Read star 2 aloud"><i data-lucide="volume-2" class="i-sm"></i></button></div>
       <div class="fb wish" data-name="the wish">
         <span class="f-ico"><i data-lucide="wand-sparkles"></i></span>
-        <div><p><b>My wish:</b> borrowing from the tens. Let's fix it together!</p>
-          <span class="pill pill-apricot tag"><i data-lucide="droplets" class="i-sm"></i>Skill to practise: subtracting with borrowing</span></div>
+        <div><p><b data-i18n="result.wish">My wish:</b> <span data-fb="wish">borrowing from the tens. Let's fix it together!</span></p>
+          <span class="pill pill-apricot tag"><i data-lucide="droplets" class="i-sm"></i><span data-i18n="result.skill">Skill to practise: </span><span data-fb="skill">subtracting with borrowing</span></span></div>
         <button class="say" aria-label="Read the wish aloud"><i data-lucide="volume-2" class="i-sm"></i></button>
       </div>
       <div class="actions">
-        <a class="btn btn-primary btn-lg" href="mistakes.html" id="seeMistakes"><i data-lucide="search" class="i-sm"></i>See my mistakes</a>
+        <a class="btn btn-primary btn-lg" href="mistakes.html" id="seeMistakes"><i data-lucide="search" class="i-sm"></i><span data-i18n="result.mistakes">See my mistakes</span></a>
       </div>
     </section>
   </div>
@@ -93,18 +93,36 @@
   /* keep ?subject=german when going on to Mistake Replay */
   document.getElementById("seeMistakes").href += location.search;
 
-  function setIcon(btn, name) { btn.innerHTML = '<i data-lucide="' + name + '" class="i-sm"></i>' + (btn === listenAll ? "<span>" + (name === "square" ? "Stop" : "Listen to all") + "</span>" : ""); }
+  /* Frau Weber's feedback on Test 3. This is the teacher's own writing, so Sprout never machine-translates it.
+     For the demo she wrote it in both languages: EN shows her English version, DE her German one. */
+  var FEEDBACK = {
+    en: { star1: "You added the tens perfectly!", star2: "Your working out is so neat!",
+          wish: "borrowing from the tens. Let's fix it together!", skill: "subtracting with borrowing" },
+    de: { star1: "Die Zehner hast du perfekt addiert!", star2: "Dein Rechenweg ist so ordentlich!",
+          wish: "Minus mit Zehnerübergang. Das üben wir zusammen!", skill: "Minus mit Zehnerübergang" }
+  };
+  function fillFeedback() {
+    var F = FEEDBACK[STUDENT_LANG] || FEEDBACK.en;
+    document.querySelectorAll("[data-fb]").forEach(function (el) { el.textContent = F[el.dataset.fb]; });
+  }
+
+  function setIcon(btn, name) { btn.innerHTML = '<i data-lucide="' + name + '" class="i-sm"></i>' + (btn === listenAll ? "<span>" + i18n(name === "square" ? "result.stop" : "result.listen") + "</span>" : ""); }
   function show() {
     cards.forEach(function (c) {
       var on = c === reading, b = c.querySelector(".say");
       c.classList.toggle("reading", on);
       setIcon(b, on ? "square" : "volume-2");
-      b.setAttribute("aria-label", (on ? "Stop reading " : "Read ") + c.dataset.name + (on ? "" : " aloud"));
+      b.setAttribute("aria-label", i18n((on ? "result.stop." : "result.read.") + c.dataset.name));
     });
     setIcon(listenAll, all ? "square" : "volume-2");
-    listenAll.setAttribute("aria-label", all ? "Stop reading" : "Listen to all");
+    listenAll.setAttribute("aria-label", i18n(all ? "result.stopReading" : "result.listen"));
     refreshIcons();
   }
+  /* first paint: only the words (the icons are drawn by the page once it has loaded) */
+  fillFeedback();
+  listenAll.querySelector("span").textContent = i18n("result.listen");
+  cards.forEach(function (c) { c.querySelector(".say").setAttribute("aria-label", i18n("result.read." + c.dataset.name)); });
+  document.addEventListener("studentlang", function () { stopAll(); fillFeedback(); });
   function stopAll() { clearTimeout(gap); Talk.stop(); reading = null; all = false; show(); }
   function read(card) {
     reading = card; show();

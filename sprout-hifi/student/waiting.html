@@ -38,26 +38,27 @@
 <body class="kid">
 <main class="k-wrap">
   <header class="k-top">
-    <a class="k-icon" href="home.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+    <a class="k-icon" href="home.html" aria-label="Back" data-i18n-label="nav.back"><i data-lucide="arrow-left"></i></a>
   </header>
 
   <section class="center">
     <span class="hero"><i data-lucide="send"></i></span>
-    <h1>Sent! Frau Weber is checking your Math test.</h1>
-    <p>You will see your results here as soon as she is ready. We will tell you with a bell.</p>
+    <h1 data-i18n="wait.title">Sent! Frau Weber is checking your Math test.</h1>
+    <p data-i18n="wait.text">You will see your results here as soon as she is ready. We will tell you with a bell.</p>
 
-    <div class="steps" role="list" aria-label="Where your test is">
-      <div class="st done" role="listitem"><span class="b"><i data-lucide="check"></i></span><span>Sent</span></div>
+    <div class="steps" role="list" aria-label="Where your test is" data-i18n-label="wait.where">
+      <div class="st done" role="listitem"><span class="b"><i data-lucide="check"></i></span><span data-i18n="wait.sent">Sent</span></div>
       <div class="bar full"></div>
-      <div class="st now" role="listitem"><span class="b">2</span><span>Teacher checking</span></div>
+      <div class="st now" role="listitem"><span class="b">2</span><span data-i18n="wait.checking">Teacher checking</span></div>
       <div class="bar"></div>
-      <div class="st next" role="listitem"><span class="b">3</span><span>Ready for you</span></div>
+      <div class="st next" role="listitem"><span class="b">3</span><span data-i18n="wait.ready">Ready for you</span></div>
     </div>
 
-    <a class="btn btn-primary btn-lg" href="home.html" style="margin-top:12px"><i data-lucide="house" class="i-sm"></i>Back to Math</a>
+    <a class="btn btn-primary btn-lg" href="home.html" style="margin-top:12px"><i data-lucide="house" class="i-sm"></i><span data-i18n="wait.back">Back to Math</span></a>
   </section>
 </main>
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
 </body>
 </html>

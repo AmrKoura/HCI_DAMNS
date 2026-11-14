@@ -89,6 +89,20 @@ body.kid { font-family: var(--font-kid); font-size: 17px; }
 .plant small { font-size: 14px; color: var(--muted); }
 .plant.thirsty { background: var(--apricot-100); }
 .plant.thirsty small { color: #8A3E14; font-weight: 600; }
+.plant.perky small { color: var(--mint-700); font-weight: 600; }
+.plant.grow-in svg { transform-origin: 50% 100%; animation: grow-in 1.1s cubic-bezier(.3, 1.4, .5, 1) both; }
+@keyframes grow-in { from { transform: scale(.82, .7); opacity: .5; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .plant.grow-in svg { animation: none; } }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: -6px 0 14px; color: var(--muted); font-size: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.legend svg { width: 18px; height: 24px; }
+.reset-demo { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 4px 0; border: 0; background: none; font: 500 13px var(--font-kid); color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.reset-demo:hover { color: var(--indigo); }
+
+/* EN | DE toggle in the student top bar */
+.lang-seg { grid-auto-columns: 52px; flex-shrink: 0; }
+.lang-seg button { font: 700 15px var(--font-kid); }
+.lang-seg.push { margin-left: auto; }
 
 /* overlay dialog */
 .overlay {

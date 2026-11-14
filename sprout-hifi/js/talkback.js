@@ -12,8 +12,12 @@ var Talk = (function () {
     var s = (q || document.body.getAttribute("data-subject") || "").toLowerCase();
     return s === "german" || s === "deutsch" ? "de" : "en";
   }
-  /* Teacher settings > Feedback defaults > Read-aloud language, else the exam's language. */
+  /* The student's EN | DE toggle wins once the child has used it. Otherwise:
+     Teacher settings > Feedback defaults > Read-aloud language, else the exam's language.
+     No German voice installed? speak() then leaves the voice to the browser's default. */
   function lang() {
+    var mine = store("studentLang");
+    if (mine === "de" || mine === "en") return mine === "de" ? "de-DE" : "en-GB";
     var pick = store("readLang");
     var l = pick === "de" || pick === "en" ? pick : examLang();
     return l === "de" ? "de-DE" : "en-GB";
@@ -58,6 +62,8 @@ var Talk = (function () {
   function voiceAllowed() { return store("consent.voice") !== "off"; }
 
   function clock(s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
+  /* student strings come from js/student.js when it is loaded */
+  function say(key, en) { return typeof i18n === "function" ? i18n(key) : en; }
 
   /* ---- recording sheet ---- */
   var sheet = document.createElement("div");
@@ -70,12 +76,12 @@ var Talk = (function () {
       '<p class="muted" id="recReply" hidden></p>' +
       '<p class="muted" style="font-size:15px"><i data-lucide="lock" class="i-sm" style="vertical-align:-3px"></i> <span id="recNote">Only Frau Weber can hear this.</span></p>' +
       '<div style="display:flex;gap:12px;width:100%">' +
-        '<button class="btn btn-ghost btn-lg" id="recCancel" style="flex:1">Cancel</button>' +
-        '<button class="btn btn-ghost btn-lg" id="recAgain" style="flex:1" hidden><i data-lucide="rotate-ccw" class="i-sm"></i>Try again</button>' +
-        '<button class="btn btn-primary btn-lg" id="recStop" style="flex:1" hidden><i data-lucide="square" class="i-sm"></i>Stop</button>' +
-        '<button class="btn btn-primary btn-lg" id="recSend" style="flex:1"><i data-lucide="send-horizontal" class="i-sm"></i>Send</button>' +
+        '<button class="btn btn-ghost btn-lg" id="recCancel" style="flex:1" data-i18n="rec.cancel">Cancel</button>' +
+        '<button class="btn btn-ghost btn-lg" id="recAgain" style="flex:1" hidden><i data-lucide="rotate-ccw" class="i-sm"></i><span data-i18n="rec.again">Try again</span></button>' +
+        '<button class="btn btn-primary btn-lg" id="recStop" style="flex:1" hidden><i data-lucide="square" class="i-sm"></i><span data-i18n="rec.stop">Stop</span></button>' +
+        '<button class="btn btn-primary btn-lg" id="recSend" style="flex:1"><i data-lucide="send-horizontal" class="i-sm"></i><span data-i18n="rec.send">Send</span></button>' +
       "</div>" +
-      '<button class="btn btn-quiet" id="recClose" hidden>Cancel</button>' +
+      '<button class="btn btn-quiet" id="recClose" hidden data-i18n="rec.cancel">Cancel</button>' +
     "</div>";
   document.body.appendChild(sheet);
 
@@ -86,7 +92,7 @@ var Talk = (function () {
   function startRec() {
     sec = 0; tick();
     sheet.firstChild.classList.remove("paused");
-    $("recState").textContent = "Recording";
+    $("recState").textContent = say("rec.recording", "Recording");
     var review = !!opts.review;
     $("recCancel").hidden = false; $("recClose").hidden = true;
     $("recStop").hidden = !review; $("recAgain").hidden = true; $("recSend").hidden = review;
@@ -96,7 +102,7 @@ var Talk = (function () {
   function stopRec() {
     clearInterval(timer);
     sheet.firstChild.classList.add("paused");
-    $("recState").textContent = "Your answer";
+    $("recState").textContent = say("rec.yourAnswer", "Your answer");
     $("recCancel").hidden = true; $("recStop").hidden = true;
     $("recAgain").hidden = false; $("recSend").hidden = false; $("recClose").hidden = false;
     $("recSend").focus();
@@ -114,7 +120,7 @@ var Talk = (function () {
     $("recAsk").hidden = !opts.title; $("recAsk").textContent = opts.title || "";
     sheet.firstChild.setAttribute("aria-labelledby", opts.title ? "recAsk" : "recTitle");
     $("recReply").hidden = !opts.reply; $("recReply").textContent = opts.reply || "";
-    $("recNote").textContent = opts.note || "Only Frau Weber can hear this.";
+    $("recNote").textContent = opts.note || say("rec.onlyWeber", "Only Frau Weber can hear this.");
     sheet.hidden = false;
     startRec();
     (opts.review ? $("recStop") : $("recSend")).focus();

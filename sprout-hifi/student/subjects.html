@@ -37,29 +37,29 @@
     <div class="grow hello">
       <span class="avatar" aria-hidden="true">L</span>
       <div>
-        <h1>Hi Lina! Pick a subject</h1>
-        <p class="muted">Class 3B</p>
+        <h1 data-i18n="subjects.hi">Hi Lina! Pick a subject</h1>
+        <p class="muted" data-i18n="subjects.class">Class 3B</p>
       </div>
     </div>
     <div class="notif-wrap">
-      <button class="k-icon" id="bell" aria-label="Notifications" aria-expanded="false"><i data-lucide="bell"></i><span class="dot">3</span></button>
+      <button class="k-icon" id="bell" aria-label="Notifications" data-i18n-label="nav.notif" aria-expanded="false"><i data-lucide="bell"></i><span class="dot">3</span></button>
       <div class="notif" id="notifPanel" hidden>
-        <h3>From your teachers</h3>
-        <a href="results.html"><span class="n-ico mint"><i data-lucide="check-check" class="i-sm"></i></span><span><p>Frau Weber checked your <b>Math Test 3</b>.</p><small>Today, 9:00</small></span></a>
-        <a href="mistakes.html"><span class="n-ico apr"><i data-lucide="sprout" class="i-sm"></i></span><span><p>New practice for you: <b>borrowing from the tens</b>.</p><small>Today, 9:01</small></span></a>
-        <a href="messages.html"><span class="n-ico"><i data-lucide="message-circle" class="i-sm"></i></span><span><p>Frau Weber sent you a sticker.</p><small>Today, 9:02</small></span></a>
+        <h3 data-i18n="notif.teachers">From your teachers</h3>
+        <a href="results.html"><span class="n-ico mint"><i data-lucide="check-check" class="i-sm"></i></span><span><p data-i18n-html="notif.checkedWeber">Frau Weber checked your <b>Math Test 3</b>.</p><small data-i18n="time.900">Today, 9:00</small></span></a>
+        <a href="mistakes.html"><span class="n-ico apr"><i data-lucide="sprout" class="i-sm"></i></span><span><p data-i18n-html="notif.practice">New practice for you: <b>borrowing from the tens</b>.</p><small data-i18n="time.901">Today, 9:01</small></span></a>
+        <a href="messages.html"><span class="n-ico"><i data-lucide="message-circle" class="i-sm"></i></span><span><p data-i18n="notif.sticker">Frau Weber sent you a sticker.</p><small data-i18n="time.902">Today, 9:02</small></span></a>
       </div>
     </div>
-    <a class="k-icon" href="../index.html" aria-label="Log out"><i data-lucide="log-out"></i></a>
+    <a class="k-icon" href="../index.html" aria-label="Log out" data-i18n-label="nav.logout"><i data-lucide="log-out"></i></a>
   </header>
 
-  <section class="tiles" aria-label="Subjects">
-    <a class="tile t-ind" href="home.html"><span class="k-badge">5 new</span><span class="ico"><i data-lucide="calculator"></i></span><b>Math</b></a>
-    <a class="tile t-mint" href="home.html"><span class="ico"><i data-lucide="flask-conical"></i></span><b>Science</b></a>
-    <a class="tile t-apr" href="home.html"><span class="k-badge">1 new</span><span class="ico"><i data-lucide="book-open"></i></span><b>German</b></a>
-    <a class="tile t-apr" href="home.html"><span class="ico"><i data-lucide="message-square-text"></i></span><b>English</b></a>
-    <a class="tile t-ind" href="home.html"><span class="ico"><i data-lucide="palette"></i></span><b>Art</b></a>
-    <a class="tile t-mint" href="home.html"><span class="ico"><i data-lucide="music"></i></span><b>Music</b></a>
+  <section class="tiles" aria-label="Subjects" data-i18n-label="subjects.label">
+    <a class="tile t-ind" href="home.html"><span class="k-badge" data-i18n="badge.5new">5 new</span><span class="ico"><i data-lucide="calculator"></i></span><b data-i18n="subj.math">Math</b></a>
+    <a class="tile t-mint" href="home.html"><span class="ico"><i data-lucide="flask-conical"></i></span><b data-i18n="subj.science">Science</b></a>
+    <a class="tile t-apr" href="home.html"><span class="k-badge" data-i18n="badge.1new">1 new</span><span class="ico"><i data-lucide="book-open"></i></span><b data-i18n="subj.german">German</b></a>
+    <a class="tile t-apr" href="home.html"><span class="ico"><i data-lucide="message-square-text"></i></span><b data-i18n="subj.english">English</b></a>
+    <a class="tile t-ind" href="home.html"><span class="ico"><i data-lucide="palette"></i></span><b data-i18n="subj.art">Art</b></a>
+    <a class="tile t-mint" href="home.html"><span class="ico"><i data-lucide="music"></i></span><b data-i18n="subj.music">Music</b></a>
   </section>
 </main>
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
