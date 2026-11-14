@@ -24,6 +24,8 @@
   .acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   .acts .btn { min-height: 34px; padding: 0 12px; font-size: 13px; }
   .selbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  a.stu, button.stu { color: var(--text); text-decoration: none; background: none; border: 0; padding: 0; font: 600 15px var(--font-ui); cursor: pointer; text-align: left; }
+  a.stu:hover .nm, button.stu:hover .nm { text-decoration: underline; text-underline-offset: 3px; color: var(--indigo-700); }
 </style>
 </head>
 <body>
@@ -70,16 +72,23 @@
   var icons = ["", "scan-text", "list-checks", "flag", "send", "circle-check"];
   var sel = {};
   function selectable(x) { return !x.miss && x.st !== 5; }
+  /* students with a Skill Timeline (teacher/student.html) */
+  var TL = { "Lina A.": "lina", "Omar B.": "omar", "Hana E.": "hana", "Nour I.": "nour" };
+  function who(x, ini) {
+    var inner = '<span class="av">' + ini + '</span><span class="nm">' + x.n + "</span>";
+    if (TL[x.n]) return '<a class="stu" href="student.html?s=' + TL[x.n] + '" title="Open skill timeline">' + inner + "</a>";
+    return '<button type="button" class="stu" data-act="soon" data-n="' + x.n + '">' + inner + "</button>";
+  }
 
   function render() {
     document.getElementById("rows").innerHTML = list.map(function (x, i) {
       var ini = x.n.split(" ").map(function (p) { return p[0]; }).join("");
       if (x.miss) {
-        return '<tr class="missing"><td><input type="checkbox" class="cb" disabled aria-label="Not submitted"></td><td><span class="stu"><span class="av">' + ini + "</span>" + x.n + '</span></td><td><span class="step st5"><i data-lucide="circle-dashed" class="i-sm"></i>Not submitted</span></td>' +
+        return '<tr class="missing"><td><input type="checkbox" class="cb" disabled aria-label="Not submitted"></td><td>' + who(x, ini) + '</td><td><span class="step st5"><i data-lucide="circle-dashed" class="i-sm"></i>Not submitted</span></td>' +
           '<td colspan="2"><div class="acts"><button class="btn btn-ghost" data-act="remind"><i data-lucide="bell-ring" class="i-sm"></i>Remind student</button><a class="btn btn-ghost" href="messages.html"><i data-lucide="message-circle" class="i-sm"></i>Message parent</a><button class="btn btn-ghost" data-act="upload"><i data-lucide="upload" class="i-sm"></i>Upload for student</button></div></td></tr>';
       }
       return '<tr class="' + (sel[i] ? "sel" : "") + '"><td><input type="checkbox" class="cb" data-i="' + i + '"' + (sel[i] ? " checked" : "") + (selectable(x) ? "" : " disabled") + ' aria-label="Select ' + x.n + '"></td>' +
-        '<td><span class="stu"><span class="av">' + ini + "</span>" + x.n + "</span></td>" +
+        "<td>" + who(x, ini) + "</td>" +
         '<td><span class="step st' + x.st + '"><i data-lucide="' + icons[x.st] + '" class="i-sm"></i>' + names[x.st] + "</span></td>" +
         '<td class="muted">' + x.d + '</td><td style="text-align:right"><a class="btn btn-quiet" href="correct.html" style="min-height:34px">' + x.a + '<i data-lucide="chevron-right" class="i-sm"></i></a></td></tr>';
     }).join("");
@@ -98,6 +107,7 @@
     var b = e.target.closest("[data-act]"); if (!b) return;
     if (b.dataset.act === "remind") toast("Reminder sent to Karim F.");
     if (b.dataset.act === "upload") toast("Choose the scanned pages for Karim F.");
+    if (b.dataset.act === "soon") toast("Timeline for " + b.dataset.n + " coming soon");
   });
   document.getElementById("all").addEventListener("change", function () {
     var on = this.checked; sel = {};

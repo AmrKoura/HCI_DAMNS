@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sprout · Skill Timeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Gochi+Hand&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/teacher.css">
+<link rel="stylesheet" href="../css/correct.css">
+<style>
+  .crumb-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .crumb-row .btn { min-height: 38px; font-size: 14px; }
+  .who { display: flex; align-items: center; gap: 16px; }
+  .who .av { width: 60px; height: 60px; border-radius: 50%; background: var(--indigo-50); color: var(--indigo); display: grid; place-items: center; font-size: 21px; font-weight: 800; flex-shrink: 0; }
+  .subj { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--indigo-50); border: 1px solid var(--line); }
+  .subj button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font: 600 14px var(--font-ui); color: var(--muted); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .subj button[aria-pressed="true"] { background: var(--surface); color: var(--indigo); box-shadow: var(--shadow-1); }
+  .subj button[aria-disabled="true"] { color: var(--faint); cursor: not-allowed; }
+  .subj button small { font-weight: 500; font-size: 12px; }
+
+  /* summary banner */
+  .sum { display: flex; gap: 14px; align-items: center; padding: 16px 18px; border-radius: var(--r-lg); background: var(--flag-100); flex-wrap: wrap; }
+  .sum .fi { width: 44px; height: 44px; border-radius: 12px; background: var(--flag); color: #fff; display: grid; place-items: center; flex-shrink: 0; }
+  .sum .grow { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .sum p { font-size: 16px; font-weight: 600; color: #5E1F2B; }
+  .sum.calm { background: var(--mint-100); }
+  .sum.calm .fi { background: var(--mint-700); }
+  .sum.calm p { color: var(--mint-700); }
+
+  /* timeline table */
+  .tl { min-width: 900px; }
+  .tl th, .tl td { padding: 10px 12px; }
+  .tl thead th { white-space: nowrap; }
+  .tl thead th small { display: block; text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 12.5px; color: var(--faint); white-space: normal; min-width: 120px; }
+  .tl .up-col { min-width: 170px; }
+  .trend svg, .up svg, .fmark svg { flex-shrink: 0; }
+  .act .ok, .nog { white-space: nowrap; }
+  .tl th[scope="row"] { position: sticky; left: 0; z-index: 1; background: var(--surface); text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--text); font-weight: 700; min-width: 170px; box-shadow: 1px 0 0 var(--line); }
+  .tl thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--line); }
+  .sk { display: flex; align-items: center; gap: 8px; }
+  .fmark { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--flag-100); color: var(--flag); font-size: 12px; font-weight: 700; }
+  .chip-s {
+    min-width: 66px; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid transparent;
+    font: 700 15px var(--font-ui); font-variant-numeric: tabular-nums; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .chip-s:hover { transform: translateY(-2px); }
+  .r-ok { background: var(--mint-100); color: var(--mint-700); border-color: #BDE8D5; }
+  .r-part { background: var(--apricot-100); color: #8A3E14; border-color: #FFCDB2; }
+  .r-bad { background: var(--flag-100); color: var(--flag); border-color: #F2BFC9; }
+  .r-none { background: var(--surface-2); color: var(--faint); border-color: var(--line); }
+  .chip-s[aria-pressed="true"] { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-100); }
+  .chip-s:focus-visible { box-shadow: var(--ring); border-radius: 10px; }
+  .up-col { border-left: 1.5px dashed var(--line-strong); border-right: 1.5px dashed var(--line-strong); background: var(--bg); }
+  thead .up-col { border-top: 1.5px dashed var(--line-strong); }
+  .tl tr:last-child td.up-col { border-bottom: 1.5px dashed var(--line-strong); }
+  .up { font-size: 13px; color: var(--muted); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .up.key { color: var(--indigo-700); }
+  .trend { display: flex; align-items: center; gap: 10px; }
+  .trend .tw { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .tw.t-improving { color: var(--mint-700); }
+  .tw.t-steady { color: var(--indigo-700); }
+  .tw.t-help { color: var(--flag); }
+  .tw.t-none { color: var(--muted); }
+  .mini { width: 34px; height: 44px; display: inline-block; flex-shrink: 0; }
+  .mini svg { width: 100%; height: 100%; }
+  .nog { font-size: 12px; color: var(--faint); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 14px 22px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend .sw { min-width: 40px; min-height: 26px; padding: 0 8px; font-size: 12.5px; border-radius: 8px; cursor: default; }
+  .legend .sw:hover { transform: none; }
+  .legend .dash { width: 40px; height: 26px; border: 1.5px dashed var(--line-strong); border-radius: 8px; }
+
+  tr.hl td, tr.hl th { animation: rowGlow 2.6s ease .4s 1; }
+  @keyframes rowGlow { 0% { background-color: var(--surface); } 30% { background-color: var(--apricot-100); } 100% { background-color: var(--surface); } }
+  tr.hl td.up-col { animation: none; }
+  @media (prefers-reduced-motion: reduce) { tr.hl td, tr.hl th { animation: none; } .chip-s:hover { transform: none; } }
+
+  /* tooltip */
+  .tip { position: fixed; z-index: 40; max-width: 280px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--indigo); color: #fff; font-size: 13px; line-height: 1.4; box-shadow: var(--shadow-2); pointer-events: none; }
+  .tip b { display: block; font-size: 12px; color: var(--apricot); }
+
+  /* lower grid */
+  .two { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .ev-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .ev-h h2 { font-size: 18px; font-weight: 700; }
+  .ev-h small { color: var(--muted); font-size: 13.5px; display: block; margin-top: 2px; }
+  .ans { display: flex; flex-direction: column; gap: 12px; }
+  .paper { padding: 12px 16px; border-radius: var(--r-md); background-color: #FFFEF9; background-image: repeating-linear-gradient(to bottom, transparent 0 39px, #E3E9F5 39px 40px); border: 1px solid var(--line); }
+  .paper .q { font-size: 12.5px; font-weight: 700; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .paper .hw { font-size: 26px; line-height: 40px; }
+  .why { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--text); margin-top: 4px; }
+  .why .i-sm { color: var(--indigo-500); margin-top: 2px; }
+  .cmp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .cmp .col { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--r-md); border: 1.5px solid var(--line); }
+  .cmp .col.cur { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-100); }
+  .cmp .col-h { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+  .cmp .paper { padding: 8px 10px; }
+  .cmp .paper .hw { font-size: 21px; line-height: 32px; }
+  .cmp .why { font-size: 12.5px; }
+  .cmp .none { color: var(--faint); font-size: 13px; padding: 10px 0; }
+  .tog[aria-pressed="true"] { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+
+  /* flag history */
+  .hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .hist li { position: relative; padding: 0 0 18px 30px; }
+  .hist li::before { content: ""; position: absolute; left: 7px; top: 20px; bottom: 0; width: 2px; background: var(--line); }
+  .hist li:last-child { padding-bottom: 0; }
+  .hist li:last-child::before { display: none; }
+  .hist .dot { position: absolute; left: 0; top: 4px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1.5px var(--line-strong); background: var(--faint); }
+  .hist .dot.d-confirm { background: var(--flag); }
+  .hist .dot.d-dismiss { background: var(--mint); }
+  .hist .dot.d-watch { background: var(--indigo-500); }
+  .hist .dot.d-new { background: var(--apricot); }
+  .hist .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .hist .top b { font-size: 15px; }
+  .hist .date { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .hist .note { font-size: 14px; margin-top: 4px; }
+  .act { display: flex; gap: 8px; align-items: center; margin-top: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--indigo-50); font-size: 13.5px; color: var(--indigo-700); font-weight: 600; }
+  .act .ok { color: var(--mint-700); }
+  .private { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+
+  @media (max-width: 1000px) { .two { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .cmp { grid-template-columns: 1fr; } .who .av { width: 48px; height: 48px; font-size: 17px; } }
+</style>
+</head>
+<body>
+<header class="t-top" data-active="papers"></header>
+<main class="t-main">
+  <div class="crumb-row">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="papers.html">Papers</a><i data-lucide="chevron-right" class="i-sm"></i><a href="test.html">Math Test 3</a><i data-lucide="chevron-right" class="i-sm"></i><a href="class.html">Class 3B</a><i data-lucide="chevron-right" class="i-sm"></i><a href="student.html" id="crumbMe" aria-current="page"></a></nav>
+    <a class="btn btn-accent" id="backBtn" href="bulk.html" hidden><i data-lucide="arrow-left" class="i-sm"></i>Back to correcting</a>
+  </div>
+
+  <div class="t-head">
+    <div class="who">
+      <span class="av" id="av" aria-hidden="true"></span>
+      <div><h1 id="name"></h1><p id="sub"></p></div>
+    </div>
+    <div class="t-actions">
+      <div class="subj" role="group" aria-label="Subject">
+        <button type="button" aria-pressed="true"><i data-lucide="calculator" class="i-sm"></i>Math</button>
+        <button type="button" aria-pressed="false" aria-disabled="true" id="sciBtn"><i data-lucide="leaf" class="i-sm"></i>Science <small>No tests yet</small></button>
+      </div>
+      <a class="btn btn-ghost" href="messages.html" id="msgKid"><i data-lucide="message-circle" class="i-sm"></i><span></span></a>
+      <a class="btn btn-primary" href="messages.html"><i data-lucide="users" class="i-sm"></i>Message parent</a>
+    </div>
+  </div>
+
+  <section class="sum" id="sum" aria-label="Summary"></section>
+
+  <section class="box" aria-labelledby="tlTitle">
+    <div class="box-pad" style="padding-bottom:6px">
+      <div class="box-h" style="margin-bottom:4px">
+        <h2 id="tlTitle">Skill timeline · Math</h2>
+        <span class="muted" style="font-size:13.5px">Click a score to see the answer</span>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl tl">
+        <caption style="position:absolute;left:-9999px" id="cap"></caption>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span><span class="chip-s sw r-ok">4/4</span>Secure</span>
+      <span><span class="chip-s sw r-part">2/4</span>Partly right</span>
+      <span><span class="chip-s sw r-bad">0/4</span>Wrong</span>
+      <span><span class="chip-s sw r-none">—</span>Not tested</span>
+      <span><span class="dash"></span>Upcoming test</span>
+      <span><span class="fmark"><i data-lucide="flag" class="i-sm"></i>Flag</span>Open red flag</span>
+    </div>
+  </section>
+
+  <div class="two">
+    <section class="box box-pad" aria-labelledby="evTitle" aria-live="polite">
+      <div class="ev-h">
+        <div><h2 id="evTitle"></h2><small id="evSub"></small></div>
+        <button class="btn btn-ghost tog" id="cmpBtn" aria-pressed="false" style="min-height:38px;font-size:14px"><i data-lucide="columns-3" class="i-sm"></i>Compare tests</button>
+      </div>
+      <div id="evBody"></div>
+    </section>
+
+    <section class="box box-pad" aria-labelledby="hTitle">
+      <div class="box-h"><h2 id="hTitle">Flag history</h2><span class="muted" style="font-size:13px">Newest first</span></div>
+      <ol class="hist" id="hist"></ol>
+    </section>
+  </div>
+
+  <p class="private muted"><i data-lucide="lock" class="i-sm"></i><span id="private"></span></p>
+</main>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="../js/teacher.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script>
+/* Runs after the data block at the bottom of the page has loaded. */
+document.addEventListener("DOMContentLoaded", function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var D = window.TIMELINE;
+  var params = new URLSearchParams(location.search);
+  var id = D.students[params.get("s")] ? params.get("s") : "lina";
+  var S = D.students[id];
+  var DONE = D.tests.filter(function (t) { return !t.up; });
+
+  /* helpers */
+  function cell(sk, ti) { var c = S.cells[sk] && S.cells[sk][ti]; return c && c.length ? c : null; }
+  function score(c) { var m = 0, o = 0; c.forEach(function (a) { m += a.m; o += a.of || 4; }); return { m: m, of: o }; }
+  function result(c) {
+    if (!c) return { cls: "r-none", word: "not tested" };
+    var s = score(c);
+    if (s.m === s.of) return { cls: "r-ok", word: "secure" };
+    if (s.m === 0) return { cls: "r-bad", word: "wrong" };
+    return { cls: "r-part", word: "partly right" };
+  }
+  function skill(k) { return D.skills.filter(function (x) { return x.k === k; })[0]; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+  function missed(k) { return DONE.filter(function (t, i) { var c = cell(k, i); return c && result(c).cls !== "r-ok"; }).length; }
+  /* a flag is open when its newest decision is not "Dismissed" */
+  function openFlag() {
+    var seen = {};
+    for (var i = 0; i < S.flags.length; i++) { var f = S.flags[i]; if (seen[f.skill]) continue; seen[f.skill] = true; if (f.dec !== "dismiss") return f; }
+    return null;
+  }
+  var OPEN = openFlag();
+
+  /* header */
+  document.title = "Sprout · " + S.name + " · Skill Timeline";
+  $("crumbMe").textContent = S.name; $("crumbMe").href = "student.html?s=" + id;
+  $("name").textContent = S.name; $("sub").textContent = "Class 3B · Grade 3";
+  $("av").textContent = S.name.split(" ").map(function (p) { return p[0]; }).join("");
+  $("msgKid").querySelector("span").textContent = "Message " + S.first;
+  $("private").textContent = S.poss ? "Only " + S.first + ", " + S.poss + " teachers and " + S.poss + " parents can see this." : "Only " + S.first + ", " + S.first + "'s teachers and parents can see this.";
+  $("sciBtn").onclick = function () { toast("No Science tests for " + S.first + " yet"); };
+
+  /* back to correcting */
+  var ret = null;
+  try { ret = JSON.parse(store("return") || "null"); } catch (e) { ret = null; }
+  if (params.get("from") === "correct" && ret && ret.page) { $("backBtn").href = ret.page + "#back"; $("backBtn").hidden = false; }
+
+  /* summary banner */
+  if (OPEN) {
+    var sk = skill(OPEN.skill), tail;
+    if (OPEN.dec === "confirm") tail = " Flag confirmed " + OPEN.date + "." + (OPEN.act && OPEN.act.done ? " Tonight's Activity done at home " + OPEN.act.done + "." : "");
+    else if (OPEN.dec === "new") tail = " New flag from Test 3 (confidence: " + OPEN.conf + "), waiting for your decision.";
+    else tail = " You chose to keep watching on " + OPEN.date + ".";
+    $("sum").innerHTML = '<span class="fi"><i data-lucide="flag"></i></span><div class="grow"><span class="pill pill-flag"><i data-lucide="flag" class="i-sm"></i>Open red flag</span><p>' +
+      sk.name + ": mistake seen in " + missed(OPEN.skill) + " of the last " + DONE.length + " tests." + tail + "</p></div>";
+  } else {
+    $("sum").className = "sum calm";
+    $("sum").innerHTML = '<span class="fi"><i data-lucide="sprout"></i></span><div class="grow"><span class="pill pill-mint"><i data-lucide="circle-check" class="i-sm"></i>All calm</span><p>No open flags. Everything is steady or improving.</p></div>';
+  }
+
+  /* table */
+  $("cap").textContent = S.name + ", Math skills across tests";
+  $("thead").innerHTML = '<tr><th scope="col">Skill</th>' + D.tests.map(function (t) {
+    return '<th scope="col"' + (t.up ? ' class="up-col"' : "") + ">" + t.name + " · " + t.date + (t.up ? '<small><span class="pill" style="font-size:11.5px;padding:1px 8px">Upcoming</span></small>' : "<small>" + t.title + "</small>") + "</th>";
+  }).join("") + '<th scope="col">Trend</th></tr>';
+
+  var TW = { improving: ["Improving", "trending-up", "t-improving"], steady: ["Steady", "arrow-right", "t-steady"], help: ["Needs help", "trending-down", "t-help"], none: ["Not tested yet", "circle-dashed", "t-none"] };
+  var PLANT = { improving: "grow", steady: "bloom", help: "droop", none: "sprout" };
+  $("tbody").innerHTML = D.skills.map(function (sk) {
+    var isOpen = OPEN && OPEN.skill === sk.k;
+    var tds = D.tests.map(function (t, ti) {
+      if (t.up) {
+        return '<td class="up-col">' + (isOpen ? '<span class="up key"><i data-lucide="calendar-clock" class="i-sm"></i>Shows if ' + sk.fix + "</span>" : '<span class="up" aria-label="' + t.name + ', upcoming">Upcoming</span>') + "</td>";
+      }
+      var c = cell(sk.k, ti), r = result(c), txt = c ? score(c).m + "/" + score(c).of : "—";
+      var label = sk.name + ", " + t.name + ": " + (c ? score(c).m + " of " + score(c).of + ", " + r.word : "not tested");
+      return '<td><button class="chip-s ' + r.cls + '" data-sk="' + sk.k + '" data-t="' + ti + '" aria-pressed="false" aria-label="' + esc(label) + '">' + txt + "</button></td>";
+    }).join("");
+    var tr = S.trend[sk.k], w = TW[tr];
+    var plantStage = S.garden ? S.garden[sk.k] : PLANT[tr];
+    var plant = plantStage ? '<span class="mini" title="' + S.first + "'s plant: " + D.plantWords[plantStage] + '">' + plantSVG(plantStage) + "</span>" : '<span class="nog">Not in garden</span>';
+    return '<tr' + (isOpen ? ' class="hl"' : "") + '><th scope="row"><span class="sk">' + sk.name + (isOpen ? '<span class="fmark"><i data-lucide="flag" class="i-sm"></i>Flag<span style="position:absolute;left:-9999px"> open</span></span>' : "") + "</span></th>" + tds +
+      '<td><span class="trend"><span class="tw ' + w[2] + '"><i data-lucide="' + w[1] + '" class="i-sm"></i>' + w[0] + "</span>" + plant + "</span></td></tr>";
+  }).join("");
+
+  /* evidence */
+  var sel = { sk: null, t: 0 }, compare = false;
+  function answersHTML(c, small) {
+    return c.map(function (a) {
+      return '<div class="paper"><div class="q"><span>' + a.q + "</span><span>" + a.m + "/" + (a.of || 4) + '</span></div><div class="hw">' + a.hw + '</div></div>' +
+        '<div class="why"><i data-lucide="sparkles" class="i-sm"></i><span><b>AI:</b> ' + a.why + "</span></div>";
+    }).join("");
+  }
+  function renderEv() {
+    var sk = skill(sel.sk), t = D.tests[sel.t], c = cell(sel.sk, sel.t), r = result(c);
+    document.querySelectorAll(".chip-s[data-sk]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.sk === sel.sk && +b.dataset.t === sel.t ? "true" : "false"); });
+    $("cmpBtn").setAttribute("aria-pressed", compare ? "true" : "false");
+    if (compare) {
+      $("evTitle").textContent = sk.name + " · all tests";
+      $("evSub").textContent = S.first + "'s answers side by side, oldest first";
+      $("evBody").innerHTML = '<div class="cmp">' + DONE.map(function (tt, i) {
+        var cc = cell(sel.sk, i), rr = result(cc);
+        return '<div class="col' + (i === sel.t ? " cur" : "") + '"><div class="col-h"><span>' + tt.name + " · " + tt.date + '</span><span class="chip-s ' + rr.cls + '" style="min-width:0;min-height:26px;font-size:12.5px;cursor:default">' + (cc ? score(cc).m + "/" + score(cc).of : "—") + "</span></div>" +
+          (cc ? answersHTML(cc, true) : '<div class="none">Not tested in this test</div>') + "</div>";
+      }).join("") + "</div>";
+    } else {
+      $("evTitle").textContent = sk.name + " · " + t.name;
+      $("evSub").textContent = t.title + " · " + t.date;
+      $("evBody").innerHTML = c
+        ? '<div class="ans"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip-s ' + r.cls + '" style="cursor:default">' + score(c).m + "/" + score(c).of + '</span><span class="muted" style="font-size:14px">' + r.word.charAt(0).toUpperCase() + r.word.slice(1) + (c.length > 1 ? " · " + c.length + " questions on this skill" : "") + "</span></div>" + answersHTML(c) + "</div>"
+        : '<p class="muted">' + sk.name + " was not in " + t.name + ".</p>";
+    }
+    refreshIcons();
+  }
+  function pick(sk, t) { sel.sk = sk; sel.t = t; renderEv(); }
+  $("tbody").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip-s[data-sk]"); if (!b) return;
+    pick(b.dataset.sk, +b.dataset.t);
+  });
+  $("cmpBtn").onclick = function () { compare = !compare; renderEv(); };
+
+  /* start: latest test of the flagged skill (or the first skill) */
+  var startSk = OPEN ? OPEN.skill : D.skills[0].k, startT = 0;
+  DONE.forEach(function (t, i) { if (cell(startSk, i)) startT = i; });
+  pick(startSk, startT);
+
+  /* tooltip */
+  var tip = $("tip");
+  function showTip(b) {
+    var t = D.tests[+b.dataset.t], c = cell(b.dataset.sk, +b.dataset.t);
+    tip.innerHTML = "<b>" + t.name + " · " + t.date + "</b>" + (c ? c.map(function (a) { return a.q + ": " + a.why; }).join("<br>") : "Not tested");
+    tip.hidden = false;
+    var r = b.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    var top = r.top - h - 8; if (top < 70) top = r.bottom + 8;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip() { tip.hidden = true; }
+  $("tbody").addEventListener("mouseover", function (e) { var b = e.target.closest(".chip-s[data-sk]"); if (b) showTip(b); });
+  $("tbody").addEventListener("mouseout", function (e) { if (e.target.closest(".chip-s[data-sk]")) hideTip(); });
+  $("tbody").addEventListener("focusin", function (e) { var b = e.target.closest(".chip-s[data-sk]"); if (b) showTip(b); });
+  $("tbody").addEventListener("focusout", hideTip);
+  window.addEventListener("scroll", hideTip, true);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") hideTip(); });
+
+  /* flag history */
+  var DEC = { confirm: ["pill-flag", "check", "Confirmed"], dismiss: ["pill-mint", "x", "Dismissed"], watch: ["", "eye", "Keep watching"], "new": ["pill-unsure", "flag", "New · waiting for your decision"] };
+  $("hist").innerHTML = S.flags.map(function (f) {
+    var d = DEC[f.dec];
+    return '<li><span class="dot d-' + f.dec + '"></span><div class="top"><span class="date">' + f.date + "</span><b>" + skill(f.skill).name + '</b><span class="pill ' + d[0] + '"><i data-lucide="' + d[1] + '" class="i-sm"></i>' + d[2] + (f.reason ? ": " + f.reason : "") + "</span></div>" +
+      (f.note ? '<p class="note">' + f.note + "</p>" : "") +
+      (f.act ? '<div class="act"><i data-lucide="moon-star" class="i-sm"></i><span>Tonight\'s Activity: ' + f.act.t + (f.act.done ? ' · <span class="ok">done at home ' + f.act.done + "</span>" : "") + "</span></div>" : "") + "</li>";
+  }).join("");
+
+  refreshIcons();
+});
+</script>
+<script>
+/* Skill Timeline data. Test 3 marks and handwriting match js/correct.js; Lina's plants match student/home.html. */
+window.TIMELINE = {
+  tests: [
+    { name: "Test 1", date: "12 Sep", title: "Math Test 1 · Numbers to 100" },
+    { name: "Test 2", date: "26 Sep", title: "Math Test 2 · Adding and taking away" },
+    { name: "Test 3", date: "7 Oct", title: "Math Test 3 · Subtraction" },
+    { name: "Test 4", date: "15 Oct", title: "Math Test 4", up: true }
+  ],
+  skills: [
+    { k: "add", name: "Adding tens" },
+    { k: "pv", name: "Place value" },
+    { k: "bor", name: "Borrowing", fix: "borrowing is fixed" },
+    { k: "wp", name: "Word problems", fix: "word problems are fixed" },
+    { k: "sh", name: "Shapes", fix: "shapes are secure" }
+  ],
+  plantWords: { bloom: "growing tall", droop: "needs a little water", grow: "getting bigger", sprout: "just planted" },
+  students: {
+    lina: {
+      name: "Lina A.", first: "Lina", poss: "her",
+      /* exactly the plants on Lina's Math Garden (student/home.html). Word problems has no plant there yet. */
+      garden: { add: "bloom", pv: "grow", bor: "droop", wp: null, sh: "sprout" },
+      trend: { add: "steady", pv: "steady", bor: "help", wp: "improving", sh: "none" },
+      cells: {
+        add: [[{ q: "Q1", hw: "35 + 42 = 77", m: 4, why: "Correct method and answer." }],
+              [{ q: "Q1", hw: "53 + 24 = 77", m: 4, why: "Correct method and answer." }],
+              [{ q: "Q1", hw: "34 + 25 = 59", m: 4, why: "Correct method and answer." }]],
+        pv:  [[{ q: "Q2", hw: "4 tens 6 ones = 40", m: 1, why: "Wrote the tens, but left out the ones." }],
+              [{ q: "Q2", hw: "8 tens 5 ones = 85", m: 4, why: "Correct." }],
+              [{ q: "Q2", hw: "7 tens 4 ones = 47", m: 0, why: "Digits swapped (74 written as 47)." }]],
+        bor: [[{ q: "Q3", hw: "41 − 16 = 35", m: 0, why: "Did not borrow: took 1 from 6 in the ones." }, { q: "Q4", hw: "42 − 17 = 35", m: 0, why: "Did not borrow: took 2 from 7 in the ones." }],
+              [{ q: "Q3", hw: "73 − 48 = 35", m: 0, why: "Did not borrow: took 3 from 8 in the ones." }, { q: "Q4", hw: "81 − 36 = 55", m: 0, why: "Did not borrow: took 1 from 6 in the ones." }],
+              [{ q: "Q3", hw: "52 − 27 = <s>45</s> 35", m: 2, why: "Set up right, but did not borrow in the tens." }, { q: "Q4", hw: "63 − 18 = 4<span style='display:inline-block;transform:scaleX(-1)'>5</span>", m: 4, why: "Correct. Backwards 5 accepted." }]],
+        wp:  [null,
+              [{ q: "Q5", hw: "30 − 12 = 22 sweets", m: 2, why: "Right number sentence, but did not borrow." }],
+              [{ q: "Q5", hw: "40 − 15 = 25 apples", m: 4, why: "Correct number sentence and answer." }]],
+        sh:  [null, null, null]
+      },
+      flags: [
+        { date: "7 Oct", skill: "bor", dec: "confirm", note: "Small group with the TA this week", act: { t: "Borrowing with beans and cups", done: "8 Oct" } },
+        { date: "26 Sep", skill: "bor", dec: "watch", note: "Check again after Test 3" },
+        { date: "12 Sep", skill: "pv", dec: "dismiss", reason: "Was ill", note: "She had a cold that week" }
+      ]
+    },
+    omar: {
+      name: "Omar B.", first: "Omar", poss: "his",
+      trend: { add: "steady", pv: "steady", bor: "help", wp: "steady", sh: "none" },
+      cells: {
+        add: [[{ q: "Q1", hw: "35 + 42 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "53 + 24 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "34 + 25 = 59", m: 4, why: "Correct." }]],
+        pv:  [[{ q: "Q2", hw: "4 tens 6 ones = 46", m: 4, why: "Correct." }], [{ q: "Q2", hw: "8 tens 5 ones = 85", m: 4, why: "Correct." }], [{ q: "Q2", hw: "7 tens 4 ones = 74", m: 4, why: "Correct." }]],
+        bor: [[{ q: "Q3", hw: "41 − 16 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "42 − 17 = 25", m: 4, why: "Correct." }],
+              [{ q: "Q3", hw: "73 − 48 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "81 − 36 = 55", m: 2, why: "Borrowed in the ones, but the tens are wrong." }],
+              [{ q: "Q3", hw: "52 − 27 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "63 − 18 = 55", m: 2, why: "Borrowed in the ones, but the tens are wrong." }]],
+        wp:  [null, [{ q: "Q5", hw: "30 − 12 = 18 sweets", m: 4, why: "Correct." }], [{ q: "Q5", hw: "40 − 15 = 25 apples", m: 4, why: "Correct." }]],
+        sh:  [null, null, null]
+      },
+      flags: [
+        { date: "7 Oct", skill: "bor", dec: "new", conf: "Medium" },
+        { date: "26 Sep", skill: "bor", dec: "watch", note: "Check again after Test 3" }
+      ]
+    },
+    hana: {
+      name: "Hana E.", first: "Hana", poss: "her",
+      trend: { add: "steady", pv: "steady", bor: "help", wp: "steady", sh: "none" },
+      cells: {
+        add: [[{ q: "Q1", hw: "35 + 42 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "53 + 24 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "34 + 25 = 59", m: 4, why: "Correct method and answer." }]],
+        pv:  [[{ q: "Q2", hw: "4 tens 6 ones = 46", m: 4, why: "Correct." }], [{ q: "Q2", hw: "8 tens 5 ones = 85", m: 4, why: "Correct." }], [{ q: "Q2", hw: "7 tens 4 ones = 47", m: 0, why: "Digits swapped (74 written as 47)." }]],
+        bor: [[{ q: "Q3", hw: "41 − 16 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "42 − 17 = 35", m: 0, why: "Did not borrow: took 2 from 7 in the ones." }],
+              [{ q: "Q3", hw: "73 − 48 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "81 − 36 = 45", m: 4, why: "Correct." }],
+              [{ q: "Q3", hw: "52 − 27 = <s>45</s> 35", m: 2, why: "Set up right, but did not borrow in the tens." }, { q: "Q4", hw: "63 − 18 = 4<span style='display:inline-block;transform:scaleX(-1)'>5</span>", m: 4, why: "Correct. Backwards 5 accepted." }]],
+        wp:  [null, [{ q: "Q5", hw: "30 − 12 = 18 sweets", m: 4, why: "Correct." }], [{ q: "Q5", hw: "40 − 15 = 25 apples", m: 4, why: "Correct number sentence and answer." }]],
+        sh:  [null, null, null]
+      },
+      flags: [
+        { date: "7 Oct", skill: "bor", dec: "new", conf: "Medium" },
+        { date: "12 Sep", skill: "bor", dec: "watch", note: "One slip. She was fine in class." }
+      ]
+    },
+    nour: {
+      name: "Nour I.", first: "Nour", poss: null,
+      trend: { add: "steady", pv: "steady", bor: "steady", wp: "help", sh: "none" },
+      cells: {
+        add: [[{ q: "Q1", hw: "35 + 42 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "53 + 24 = 77", m: 4, why: "Correct." }], [{ q: "Q1", hw: "34 + 25 = 59", m: 4, why: "Correct." }]],
+        pv:  [[{ q: "Q2", hw: "4 tens 6 ones = 46", m: 4, why: "Correct." }], [{ q: "Q2", hw: "8 tens 5 ones = 85", m: 4, why: "Correct." }], [{ q: "Q2", hw: "7 tens 4 ones = 74", m: 4, why: "Correct." }]],
+        bor: [[{ q: "Q3", hw: "41 − 16 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "42 − 17 = 25", m: 4, why: "Correct." }],
+              [{ q: "Q3", hw: "73 − 48 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "81 − 36 = 45", m: 4, why: "Correct." }],
+              [{ q: "Q3", hw: "52 − 27 = 25", m: 4, why: "Correct." }, { q: "Q4", hw: "63 − 18 = 45", m: 4, why: "Correct." }]],
+        wp:  [null, [{ q: "Q5", hw: "30 − 12 = 18 sweets", m: 4, why: "Correct." }], [{ q: "Q5", hw: "40 + 15 = 55 apples", m: 1, why: "Right numbers, but added instead of taking away." }]],
+        sh:  [null, null, null]
+      },
+      flags: [
+        { date: "7 Oct", skill: "wp", dec: "new", conf: "Low" }
+      ]
+    }
+  }
+};
+</script>
+</body>
+</html>

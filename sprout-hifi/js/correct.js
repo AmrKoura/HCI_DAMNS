@@ -45,6 +45,18 @@
 
   var S = { step: 1, idx: SINGLE ? 0 : 10, done: SINGLE ? [1, 0, 0, 0] : [22, 10, 0, 0], resume: true, choice: {}, marks: {}, edit: null, decision: {} };
 
+  /* coming back from the Skill Timeline (student.html): reopen the step and paper we left */
+  if (location.hash === "#back") {
+    try {
+      var back = JSON.parse(store("return") || "null");
+      if (back && back.page === (SINGLE ? "correct.html" : "bulk.html")) {
+        S.step = back.step; S.idx = back.idx; S.done = back.done; S.decision = back.decision || {}; S.resume = false;
+      }
+      history.replaceState(null, "", location.pathname + location.search);
+    } catch (e) { /* keep the normal start */ }
+    store("return", "");
+  }
+
   function list() { return S.step === 2 ? FLAGGED : ALL; }
   function sizes(i) { return i === 2 ? FLAGGED.length : ALL.length; }
   function variant(name) { return V[ALL.indexOf(name) % 3]; }
@@ -124,6 +136,7 @@
       p += '<div class="panel-h"><h2>Step 3 · Red flag</h2><span class="pill pill-flag"><i data-lucide="gauge" class="i-sm"></i>Confidence: ' + f.conf + "</span></div>";
       p += '<div class="flag-head"><span class="fi"><i data-lucide="flag"></i></span><span><b>' + f.skill + "</b><small>Seen in " + f.seen + ". Evidence from " + first + "'s own answers:</small></span></div>";
       p += '<div class="ev-row">' + f.ev.map(function (e) { return '<div class="ev"><small>' + e[0] + '</small><div class="hw">' + e[1] + "</div></div>"; }).join("") + "</div>";
+      p += '<a class="btn btn-quiet" style="min-height:36px;align-self:flex-start;font-size:14px" data-tl href="student.html?s=' + first.toLowerCase() + '&amp;from=correct"><i data-lucide="chart-line" class="i-sm"></i>See ' + first + "'s skill timeline</a>";
       p += '<span class="fld-l">Your decision</span><div class="dec">' +
         '<label><input type="radio" name="dec" value="confirm"' + (d === "confirm" ? " checked" : "") + '><b><i data-lucide="check" class="i-sm"></i>Confirm</b><small>The plant droops gently and parents get Tonight\'s Activity.</small></label>' +
         '<label><input type="radio" name="dec" value="dismiss"' + (d === "dismiss" ? " checked" : "") + '><b><i data-lucide="x" class="i-sm"></i>Dismiss</b><small>A one-off, like being ill or a bad day.</small></label>' +
@@ -162,6 +175,8 @@
     if (t.dataset.save) { S.edit = null; render(); toast("Line saved"); }
     if (t.dataset.msg) toast(t.dataset.msg === "voice" ? "Recording a voice note..." : t.dataset.msg === "sticker" ? "Sticker added: Super effort!" : "Message box opened");
     if (t.id === "keyBtn") openKey();
+    /* leaving for the Skill Timeline: remember where we are so "Back to correcting" lands here again */
+    if (t.hasAttribute("data-tl")) store("return", JSON.stringify({ page: SINGLE ? "correct.html" : "bulk.html", step: S.step, idx: S.idx, done: S.done, decision: S.decision }));
   });
   document.addEventListener("input", function (e) {
     if (e.target.dataset && e.target.dataset.mk) {

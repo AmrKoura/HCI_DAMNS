@@ -34,7 +34,7 @@ You need internet for the icons (Lucide) and fonts (Google Fonts). The prototype
 | View | Best on | Pages |
 |---|---|---|
 | Student | Tablet (works on laptop) | Subjects, subject home with Math Garden, submit exam photos, waiting screen, results, one result with two stars and a wish, Mistake Replay with mini lesson and "Try one like it", messages with voice notes |
-| Teacher | Laptop | Dashboard, Papers, test page with answer key, class list, correcting one paper or a whole batch in 4 steps (check text, confirm grade, red flags, release), new assignment, messages, settings with grading system |
+| Teacher | Laptop | Dashboard, Papers, test page with answer key, class list, Skill Timeline (one student's skills across all tests, with the flag history), correcting one paper or a whole batch in 4 steps (check text, confirm grade, red flags, release), new assignment, messages, settings with grading system |
 | Parent | Laptop and phone | Overview, tonight's activity (English and Arabic), calendar, messages (own chats and read-only child chats), settings with privacy and consent |
 
 ## Tasks to try
@@ -46,6 +46,7 @@ These match our HTDs:
 - **Teacher, grade a class set:** Papers > Math Test 3 > 3B > Correct all 22 > Step 1 Check text > Step 2 Confirm grade
 - **Teacher, confirm or dismiss a red flag:** in the same flow, Step 3 Red flags
 - **Teacher, return the results:** in the same flow, Step 4 Release > Release all 22 papers
+- **Teacher, check a student's skill timeline:** Papers > Math Test 3 > 3B > click Lina A. (or Step 3 Red flags > See Lina's skill timeline)
 - **Teacher, new assignment:** Dashboard > New assignment > Publish to students
 - **Parent, tonight's activity:** Overview > Open activity > We did it!
 - **Parent, message a teacher:** Messages > My chats > Frau Weber (try "Translate to Arabic")
@@ -68,6 +69,7 @@ js/
   parent.js         parent top bar, child switcher, language menu
 student/            student pages
 teacher/            teacher pages
+  student.html      Skill Timeline: one student's skills across all tests (?s=lina, omar, hana, nour)
 parent/             parent pages
 ```
 
